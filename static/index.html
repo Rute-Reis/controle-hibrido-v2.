@@ -11,14 +11,13 @@
     <meta name="apple-mobile-web-app-title" content="Controle Híbrido">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/app-icon.png">
 
-    <!-- FOLHA DE ESTILO DO MAPA (LEAFLET) E ÍCONES VETORIAIS (BOOTSTRAP ICONS) -->
+    <!-- LEAFLET E BOOTSTRAP ICONS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         
-        /* MODO CLARO ELEGANTE */
         body { 
             background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%); 
             color: #212529; 
@@ -29,7 +28,6 @@
             -webkit-tap-highlight-color: transparent; 
         }
         
-        /* CABEÇALHO */
         .header { 
             text-align: center; 
             padding: 20px 15px 15px 15px; 
@@ -44,7 +42,6 @@
         .header i { font-size: 24px; color: #0d3b66; }
         .header h1 { font-size: 19px; color: #0d3b66; font-weight: 700; letter-spacing: 0.3px; }
 
-        /* PULL-TO-REFRESH INDICATOR */
         #pullIndicator {
             text-align: center;
             font-size: 12px;
@@ -114,9 +111,8 @@
         }
         button:active { transform: scale(0.98); }
 
-        .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; }
+        .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; color: white; border: none; cursor: pointer; }
 
-        /* BARRA DE NAVEGAÇÃO INFERIOR COM ÍCONES VETORIAIS */
         .nav-bar { 
             position: fixed; 
             bottom: 0; 
@@ -147,15 +143,7 @@
             transition: color 0.2s;
         }
         .nav-item.active { color: #0d3b66; font-weight: bold; }
-        .nav-item i { 
-            font-size: 20px; 
-            margin-bottom: 2px; 
-            transition: transform 0.2s;
-        }
-        .nav-item.active i { 
-            transform: translateY(-2px);
-            color: #0d3b66;
-        }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; }
 
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
         .cal-head { font-size: 11px; color: #6c757d; font-weight: bold; padding-bottom: 4px; }
@@ -166,13 +154,43 @@
         .cal-day.Folga { background-color: #ff9800; color: #fff; font-weight: bold; }
         .cal-day.FinalDeSemana { background-color: #9c27b0; color: #fff; font-weight: bold; }
 
-        .hist-item { background-color: #f8f9fa; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #0d3b66; border-top: 1px solid #e9ecef; border-right: 1px solid #e9ecef; border-bottom: 1px solid #e9ecef; }
-        .thumb-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 1px solid #ced4da; }
-        
-        #mapaLocal { height: 180px; width: 100%; border-radius: 10px; margin-bottom: 14px; border: 1px solid #ced4da; z-index: 1; }
+        /* CARDS EXPANSÍVEIS DO HISTÓRICO */
+        .hist-item-card {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #e9ecef;
+            border-left: 5px solid #0d3b66;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .hist-header-content {
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hist-details {
+            display: none;
+            padding: 0 14px 14px 14px;
+            border-top: 1px dashed #dee2e6;
+            margin-top: 6px;
+            background-color: #ffffff;
+        }
+        .hist-details.active {
+            display: block;
+        }
+        .map-hist {
+            height: 150px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #ced4da;
+        }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
-        .modal img { max-width: 90%; max-height: 80%; border-radius: 10px; }
+        .thumb-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid #ced4da; }
+        #mapaLocal { height: 180px; width: 100%; border-radius: 10px; margin-bottom: 14px; border: 1px solid #ced4da; z-index: 1; }
 
         .status-msg { text-align: center; font-size: 13px; margin-top: 10px; font-weight: 500; }
         .status-sucesso { color: #2e7d32; }
@@ -185,13 +203,11 @@
 </head>
 <body>
 
-    <!-- CABEÇALHO SUPERIOR -->
     <div class="header">
         <i class="bi bi-geo-alt-fill"></i>
         <h1>Controle Híbrido</h1>
     </div>
 
-    <!-- INDICADOR VISUAL DO PULL-TO-REFRESH -->
     <div id="pullIndicator">🔄 Puxe para atualizar dados...</div>
 
     <div class="container">
@@ -264,25 +280,21 @@
             </div>
         </div>
 
-        <!-- 📜 ABA 4: HISTÓRICO -->
+        <!-- 📜 ABA 4: HISTÓRICO EXPANSÍVEL -->
         <div id="tabHistorico" class="tab-content">
             <div class="card">
                 <h3>
                     <span>📜 Histórico Completo</span>
                     <button class="btn-export" onclick="exportarCSV()">📥 Baixar CSV</button>
                 </h3>
+                <p style="font-size: 11px; color: #6c757d; margin-bottom: 12px;">💡 Clique em qualquer registro para ver o mapa e detalhes.</p>
                 <div id="listaHistorico">Carregando histórico...</div>
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL DE AMPLIAR FOTO -->
-    <div id="imgModal" class="modal" onclick="fecharModal()">
-        <img id="imgExpanded" src="" alt="Foto Ampliada">
-    </div>
-
-    <!-- BARRA DE NAVEGAÇÃO INFERIOR COM ÍCONES BOOTSTRAP -->
+    <!-- NAVEGAÇÃO INFERIOR -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="mudarAba('tabDashboard', this)">
             <i class="bi bi-house-door-fill"></i>
@@ -311,6 +323,7 @@
         let registrosGlobais = [];
         let mapaInstancia = null;
         let chartInstancia = null;
+        let mapasHistInstancias = {};
 
         const REGRAS_PLANILHA_VIVO = {
             1: 1, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 5, 10: 6,
@@ -359,9 +372,7 @@
                 renderizarDashboard();
                 renderizarHistorico();
 
-                if (notificar) {
-                    alert("✅ Dados atualizados com sucesso!");
-                }
+                if (notificar) alert("✅ Dados atualizados com sucesso!");
             } catch (err) {
                 document.getElementById("listaHistorico").innerHTML = "<p style='color:#c62828;'>Erro ao carregar dados do Supabase.</p>";
             }
@@ -408,15 +419,13 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: { color: '#212529', font: { size: 12 } }
-                        }
+                        legend: { position: 'right', labels: { color: '#212529', font: { size: 12 } } }
                     }
                 }
             });
         }
 
+        // RENDERIZAÇÃO DOS CARDS EXPANSÍVEIS NO HISTÓRICO
         function renderizarHistorico() {
             const container = document.getElementById('listaHistorico');
             if (!registrosGlobais || registrosGlobais.length === 0) {
@@ -425,33 +434,68 @@
             }
 
             container.innerHTML = registrosGlobais.map(r => `
-                <div class="hist-item">
-                    <div>
-                        <strong>#${r.id} - ${r.tipo}</strong><br>
-                        <small style="color:#6c757d;">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small><br>
-                        <small style="color:#495057;">🏢 ${r.empresa || 'Vivo'}${r.observacao ? ' - ' + r.observacao : ''}</small>
+                <div class="hist-item-card" onclick="alternarDetalhesCard(${r.id}, ${r.latitude || -23.55052}, ${r.longitude || -46.633308})">
+                    <div class="hist-header-content">
+                        <div>
+                            <strong>#${r.id} - ${r.tipo}</strong><br>
+                            <small style="color:#6c757d;">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small><br>
+                            <small style="color:#495057;">🏢 ${r.empresa || 'Vivo'}</small>
+                        </div>
+                        ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img">` : '<i class="bi bi-chevron-down" style="color:#aaa;"></i>'}
                     </div>
-                    ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img" onclick="expandirImagem('${r.foto_url}')" title="Clique para ampliar">` : ''}
+
+                    <div id="card-detail-${r.id}" class="hist-details">
+                        <p style="font-size:12px; color:#495057; margin-top:8px;">
+                            <strong>📝 Observação:</strong> ${r.observacao || 'Nenhuma observação informada.'}
+                        </p>
+                        <div id="map-hist-${r.id}" class="map-hist"></div>
+                    </div>
                 </div>
             `).join('');
         }
 
+        // ALTERNA A VISIBILIDADE DO CARD E CARREGA O MAPA DELE
+        function alternarDetalhesCard(id, lat, lng) {
+            const detailDiv = document.getElementById(`card-detail-${id}`);
+            const isVisible = detailDiv.classList.contains('active');
+
+            document.querySelectorAll('.hist-details').forEach(el => el.classList.remove('active'));
+
+            if (!isVisible) {
+                detailDiv.classList.add('active');
+
+                setTimeout(() => {
+                    const mapContainer = document.getElementById(`map-hist-${id}`);
+                    if (mapContainer && !mapasHistInstancias[id]) {
+                        const map = L.map(`map-hist-${id}`).setView([lat, lng], 15);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                        L.marker([lat, lng]).addTo(map).bindPopup(`Ponto #${id}`).openPopup();
+                        mapasHistInstancias[id] = map;
+                    }
+                }, 100);
+            }
+        }
+
+        // FUNÇÃO DE EXPORTAÇÃO CSV COMPATÍVEL COM IPHONE (BLOB)
         function exportarCSV() {
             if (!registrosGlobais || registrosGlobais.length === 0) {
                 alert("Não existem registros para exportar!");
                 return;
             }
 
-            let csvContent = "data:text/csv;charset=utf-8,ID;Data;Hora;Tipo;Empresa;Observacao;URL_Foto\n";
+            let csvContent = "ID;Data;Hora;Tipo;Empresa;Observacao;URL_Foto\n";
 
             registrosGlobais.forEach(r => {
                 const linha = `${r.id};${formatarDataBR(r.data)};${r.hora};${r.tipo};${r.empresa || 'Vivo'};"${r.observacao || ''}";"${r.foto_url || ''}"`;
                 csvContent += linha + "\n";
             });
 
-            const encodedUri = encodeURI(csvContent);
+            // CRIAÇÃO DE BLOB PARA COMPATIBILIDADE COM O SAFARI / IOS
+            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", url);
             link.setAttribute("download", `historico_ponto_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link);
             link.click();
@@ -470,9 +514,7 @@
             const primeiroDiaDaSemana = new Date(ano, mes, 1).getDay();
             const diasNoMes = new Date(ano, mes + 1, 0).getDate();
 
-            for (let i = 0; i < primeiroDiaDaSemana; i++) {
-                html += `<div class="cal-empty"></div>`;
-            }
+            for (let i = 0; i < primeiroDiaDaSemana; i++) html += `<div class="cal-empty"></div>`;
 
             for (let d = 1; d <= diasNoMes; d++) {
                 const diaPad = d < 10 ? '0' + d : d;
@@ -500,9 +542,7 @@
             const lngPadrao = -46.633308;
 
             mapaInstancia = L.map('mapaLocal').setView([latPadrao, lngPadrao], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(mapaInstancia);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaInstancia);
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
@@ -514,93 +554,70 @@
             }
         }
 
-        function expandirImagem(url) {
-            document.getElementById('imgExpanded').src = url;
-            document.getElementById('imgModal').style.display = 'flex';
-        }
+        // VARIÁVEIS GLOBAIS PARA GUARDAR A POSIÇÃO ATUAL DO GPS
+let latAtual = null;
+let lngAtual = null;
 
-        function fecharModal() {
-            document.getElementById('imgModal').style.display = 'none';
-        }
+function carregarMapaGPS() {
+    if (mapaInstancia) return;
 
-        document.getElementById('formPonto').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnSalvar');
-            const statusDiv = document.getElementById('statusMsg');
-            const formData = new FormData(e.target);
+    const latPadrao = -23.55052;
+    const lngPadrao = -46.633308;
 
-            btn.disabled = true;
-            btn.innerText = "Salvando no Supabase...";
+    mapaInstancia = L.map('mapaLocal').setView([latPadrao, lngPadrao], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaInstancia);
 
-            try {
-                const res = await fetch(`${API_URL}/registrar`, { method: 'POST', body: formData });
-                const data = await res.json();
-
-                if (data.sucesso) {
-                    statusDiv.className = "status-msg status-sucesso";
-                    statusDiv.innerText = "✅ " + data.mensagem;
-                    e.target.reset();
-                    document.getElementById('empresa').value = 'Vivo';
-                    await carregarDados();
-                    const btnHist = document.querySelectorAll('.nav-item')[3];
-                    mudarAba('tabHistorico', btnHist);
-                } else {
-                    statusDiv.className = "status-msg status-erro";
-                    statusDiv.innerText = "❌ Erro ao registrar ponto.";
-                }
-            } catch (err) {
-                statusDiv.className = "status-msg status-erro";
-                statusDiv.innerText = "❌ Erro ao comunicar com a API.";
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "📍 Salvar Ponto Agora";
-            }
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            latAtual = pos.coords.latitude;
+            lngAtual = pos.coords.longitude;
+            
+            mapaInstancia.setView([latAtual, lngAtual], 15);
+            L.marker([latAtual, lngAtual]).addTo(mapaInstancia).bindPopup("Você está aqui!").openPopup();
         });
+    }
+}
 
-        // PULL-TO-REFRESH
-        let startY = 0;
-        let currentY = 0;
-        let isPulling = false;
-        const pullIndicator = document.getElementById('pullIndicator');
+// SUBMISSÃO DO FORMULÁRIO ENVIANDO LATITUDE E LONGITUDE
+document.getElementById('formPonto').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSalvar');
+    const statusDiv = document.getElementById('statusMsg');
+    const formData = new FormData(e.target);
 
-        window.addEventListener('touchstart', (e) => {
-            if (window.scrollY === 0) {
-                startY = e.touches[0].clientY;
-                isPulling = true;
-            }
-        }, { passive: true });
+    // Anexa as coordenadas capturadas pelo GPS no envio
+    if (latAtual && lngAtual) {
+        formData.append('latitude', latAtual);
+        formData.append('longitude', lngAtual);
+    }
 
-        window.addEventListener('touchmove', (e) => {
-            if (!isPulling) return;
-            currentY = e.touches[0].clientY;
-            const distance = currentY - startY;
+    btn.disabled = true;
+    btn.innerText = "Salvando no Supabase...";
 
-            if (distance > 0 && window.scrollY === 0) {
-                const pullHeight = Math.min(distance * 0.4, 50);
-                pullIndicator.style.height = `${pullHeight}px`;
-                pullIndicator.style.opacity = `${pullHeight / 50}`;
-            }
-        }, { passive: true });
+    try {
+        const res = await fetch(`${API_URL}/registrar`, { method: 'POST', body: formData });
+        const data = await res.json();
 
-        window.addEventListener('touchend', () => {
-            if (!isPulling) return;
-            const distance = currentY - startY;
-
-            if (distance > 100 && window.scrollY === 0) {
-                pullIndicator.innerText = "⚡ Atualizando...";
-                carregarDados().then(() => {
-                    setTimeout(() => {
-                        pullIndicator.style.height = "0px";
-                        pullIndicator.style.opacity = "0";
-                        pullIndicator.innerText = "🔄 Puxe para atualizar dados...";
-                    }, 500);
-                });
-            } else {
-                pullIndicator.style.height = "0px";
-                pullIndicator.style.opacity = "0";
-            }
-            isPulling = false;
-        });
+        if (data.sucesso) {
+            statusDiv.className = "status-msg status-sucesso";
+            statusDiv.innerText = "✅ " + data.mensagem;
+            e.target.reset();
+            document.getElementById('empresa').value = 'Vivo';
+            await carregarDados();
+            const btnHist = document.querySelectorAll('.nav-item')[3];
+            mudarAba('tabHistorico', btnHist);
+        } else {
+            statusDiv.className = "status-msg status-erro";
+            statusDiv.innerText = "❌ Erro ao registrar ponto.";
+        }
+    } catch (err) {
+        statusDiv.className = "status-msg status-erro";
+        statusDiv.innerText = "❌ Erro ao comunicar com a API.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "📍 Salvar Ponto Agora";
+    }
+});
 
         carregarDados();
     </script>

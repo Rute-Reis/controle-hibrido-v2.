@@ -1,132 +1,93 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+import os
 from datetime import datetime
 import pytz
-import os
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from supabase import create_client, Client
 
-# -------------------------------------------------------------
-# 1. INICIALIZAÇÃO DA API FASTAPI
-# -------------------------------------------------------------
-app = FastAPI(
-    title="API Controle Hibrido v2",
-    description="Backend conectado ao Supabase com tratamento seguro de erros",
-    version="2.0.0"
-)
+app = FastAPI(title="Meu Controle Híbrido v2")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Servir arquivos estáticos (HTML, CSS, JS, Imagens)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-TIMEZONE_BR = pytz.timezone("America/Sao_Paulo")
+# Conexão com o Supabase usando Variáveis de Ambiente
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://awcfurzssrtvjuwqfebp.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "sb_publishable_hFUNm34QcB80l3SgQ_jfKQ_hyPjAKMY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# -------------------------------------------------------------
-# 2. CREDENCIAIS E CONEXÃO COM O SUPABASE
-# -------------------------------------------------------------
-SUPABASE_URL = "https://awcfurzssrtvjuwqfebp.supabase.co"
-SUPABASE_KEY = "sb_publishable_hFUNm34QcB80l3SgQ_jfKQ_hyPjAKMY"
+# Fuso Horário de Brasília
+BR_TZ = pytz.timezone('America/Sao_Paulo')
 
-try:
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    print("✅ Conectado ao Supabase com sucesso!")
-except Exception as e:
-    supabase = None
-    print(f"❌ Erro de conexão com Supabase: {e}")
 
-if not os.path.exists("static"):
-    os.makedirs("static")
-
-# -------------------------------------------------------------
-# 3. ROTAS DA API (ENDPOINTS)
-# -------------------------------------------------------------
 @app.get("/")
-def carregar_frontend():
-    index_path = os.path.join("static", "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return {"status": "online"}
+def home():
+    """Servir a página principal da aplicação (index.html)"""
+    return FileResponse("static/index.html")
+
 
 @app.get("/api/registros")
 def listar_registros():
-    if not supabase:
-        raise HTTPException(status_code=500, detail="Servidor não conectado ao Supabase.")
+    """Busca todos os pontos salvos na tabela do Supabase ordenados por id"""
     try:
-        res = supabase.table("registros").select("*").order("data", desc=True).order("hora", desc=True).execute()
-        return res.data
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar dados: {str(err)}")
+        response = supabase.table("registros").select("*").order("id", desc=True).execute()
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar registros: {str(e)}")
+
 
 @app.post("/api/registrar")
 async def registrar_ponto(
     tipo: str = Form(...),
-    empresa: str = Form(default="Vivo"),
-    observacao: str = Form(default=""),
-    data_manual: str = Form(default=""),
+    empresa: str = Form("Vivo"),
+    data_manual: str = Form(None),
+    observacao: str = Form(""),
+    latitude: float = Form(None),
+    longitude: float = Form(None),
     foto: UploadFile = File(None)
 ):
     """
-    Recebe os dados do formulário com tratamento seguro de upload de foto e gravação de ponto.
+    Recebe o formulário de ponto, faz upload da foto para o Supabase Storage 
+    e grava as informações de data, hora, tipo, empresa e coordenadas GPS.
     """
-    if not supabase:
-        raise HTTPException(status_code=500, detail="Servidor não conectado ao Supabase.")
+    agora_br = datetime.now(BR_TZ)
+    data_registro = data_manual if data_manual else agora_br.strftime("%Y-%m-%d")
+    hora_registro = agora_br.strftime("%H:%M:%S")
+
+    foto_url = None
+
+    # Upload da foto para o Bucket 'comprovantes' no Supabase
+    if foto and foto.filename:
+        try:
+            timestamp = int(agora_br.timestamp())
+            extensao = foto.filename.split(".")[-1]
+            nome_arquivo = f"ponto_{timestamp}.{extensao}"
+            conteudo_foto = await foto.read()
+
+            supabase.storage.from_("comprovantes").upload(
+                file=conteudo_foto,
+                path=nome_arquivo,
+                file_options={"content-type": foto.content_type}
+            )
+
+            foto_url = supabase.storage.from_("comprovantes").get_public_url(nome_arquivo)
+        except Exception as e:
+            print(f"Aviso: Erro no upload da imagem: {str(e)}")
+
+    # Inserção dos dados no banco do Supabase incluindo Latitude e Longitude
+    dados_ponto = {
+        "data": data_registro,
+        "hora": hora_registro,
+        "tipo": tipo,
+        "empresa": empresa,
+        "observacao": observacao,
+        "foto_url": foto_url,
+        "latitude": latitude,
+        "longitude": longitude
+    }
 
     try:
-        agora_br = datetime.now(TIMEZONE_BR)
-        
-        # Define a data oficial do registro
-        data_final = data_manual.strip() if data_manual.strip() else agora_br.strftime("%Y-%m-%d")
-        hora_final = agora_br.strftime("%H:%M:%S")
-
-        url_foto_publica = None
-
-        # 1. Tenta fazer o upload da foto para o Storage do Supabase de forma segura
-        if foto and foto.filename:
-            try:
-                extensao = os.path.splitext(foto.filename)[1].lower()
-                if not extensao:
-                    extensao = ".jpg"
-                
-                nome_arquivo_storage = f"foto_{agora_br.strftime('%Y%m%d_%H%M%S')}{extensao}"
-                conteudo_foto = await foto.read()
-
-                # Upload para o bucket 'comprovantes'
-                supabase.storage.from_("comprovantes").upload(
-                    path=nome_arquivo_storage,
-                    file=conteudo_foto,
-                    file_options={"content-type": foto.content_type or "image/jpeg"}
-                )
-
-                url_foto_publica = supabase.storage.from_("comprovantes").get_public_url(nome_arquivo_storage)
-                print(f"📸 Foto salva no Storage: {url_foto_publica}")
-            except Exception as foto_err:
-                print(f"⚠️ Aviso: Não foi possível salvar a foto no Storage: {foto_err}")
-                url_foto_publica = None
-
-        # 2. Salva o registro de ponto na tabela 'registros' do PostgreSQL
-        dados_registro = {
-            "data": data_final,
-            "hora": hora_final,
-            "tipo": tipo,
-            "empresa": empresa,
-            "observacao": observacao,
-            "foto_url": url_foto_publica
-        }
-
-        res = supabase.table("registros").insert(dados_registro).execute()
-        item_salvo = res.data[0] if res.data else dados_registro
-
-        return {
-            "sucesso": True,
-            "mensagem": f"Ponto de '{tipo}' salvo com sucesso!",
-            "registro": item_salvo
-        }
-
-    except Exception as err:
-        print(f"❌ Erro crítico no registro: {err}")
-        raise HTTPException(status_code=500, detail=f"Erro interno ao salvar: {str(err)}")
+        res = supabase.table("registros").insert(dados_ponto).execute()
+        return {"sucesso": True, "mensagem": "Ponto registrado com sucesso!", "dados": res.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar registro: {str(e)}")
