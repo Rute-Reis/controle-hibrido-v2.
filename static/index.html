@@ -16,36 +16,98 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
+        /* VARIÁVEIS DE CORES PARA MODO CLARO (PADRÃO) */
+        :root {
+            --bg-body: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-input: #f8f9fa;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --border-card: #e9ecef;
+            --shadow-card: rgba(0, 0, 0, 0.05);
+
+            /* CORES VIVAS DA JORNADA */
+            --color-presencial: #2e7d32;
+            --bg-presencial: #e8f5e9;
+            --color-homeoffice: #0288d1;
+            --bg-homeoffice: #e1f5fe;
+            --color-folga: #ed6c02;
+            --bg-folga: #fff3e0;
+            --color-fds: #9c27b0;
+            --bg-fds: #f3e5f5;
+        }
+
+        /* VARIÁVEIS DE CORES PARA MODO ESCURO */
+        body.dark-mode {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --bg-header: #1e1e1e;
+            --bg-input: #2a2a2a;
+            --text-main: #ffffff;
+            --text-muted: #aaa;
+            --border-color: #2a2a2a;
+            --border-card: #2a2a2a;
+            --shadow-card: rgba(0, 0, 0, 0.4);
+
+            --bg-presencial: #1b431e;
+            --color-presencial: #81c784;
+            --bg-homeoffice: #0d3c61;
+            --color-homeoffice: #64b5f6;
+            --bg-folga: #4a2800;
+            --color-folga: #ffb74d;
+            --bg-fds: #3b1348;
+            --color-fds: #ba68c8;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         
         body { 
-            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%); 
-            color: #212529; 
+            background: var(--bg-body); 
+            color: var(--text-main); 
             padding-bottom: 95px; 
             max-width: 500px; 
             margin: 0 auto; 
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent; 
+            transition: background 0.3s, color 0.3s;
         }
         
         .header { 
             text-align: center; 
-            padding: 20px 15px 15px 15px; 
-            background: #ffffff; 
-            border-bottom: 1px solid #dee2e6; 
+            padding: 16px 18px; 
+            background: var(--bg-header); 
+            border-bottom: 1px solid var(--border-color); 
             display: flex; 
-            justify-content: center; 
+            justify-content: space-between; 
             align-items: center; 
-            gap: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 10px var(--shadow-card);
         }
-        .header i { font-size: 24px; color: #0d3b66; }
-        .header h1 { font-size: 19px; color: #0d3b66; font-weight: 700; letter-spacing: 0.3px; }
+        .header-title { display: flex; align-items: center; gap: 8px; }
+        .header i { font-size: 22px; color: #4dabf7; }
+        .header h1 { font-size: 18px; color: var(--text-main); font-weight: 700; }
+
+        /* BOTÃO DE ALTERNAR TEMA (DARK/LIGHT) */
+        .btn-theme-toggle {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
 
         #pullIndicator {
             text-align: center;
             font-size: 12px;
-            color: #6c757d;
+            color: var(--text-muted);
             height: 0;
             overflow: hidden;
             transition: height 0.2s ease, opacity 0.2s ease;
@@ -53,7 +115,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #e9ecef;
+            background: var(--bg-input);
             font-weight: 600;
         }
 
@@ -62,43 +124,37 @@
         .tab-content.active { display: block; }
 
         .card { 
-            background-color: #ffffff; 
+            background-color: var(--bg-card); 
             padding: 18px; 
             border-radius: 18px; 
             margin-bottom: 16px; 
-            border: 1px solid #e9ecef; 
-            box-shadow: 0 4px 18px rgba(0,0,0,0.04); 
-            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-card); 
+            box-shadow: 0 4px 18px var(--shadow-card); 
+            transition: background-color 0.3s;
         }
         .card h3 { 
             font-size: 15px; 
             margin-bottom: 14px; 
-            color: #343a40; 
-            border-bottom: 1px solid #f1f3f5; 
+            color: var(--text-main); 
+            border-bottom: 1px solid var(--border-color); 
             padding-bottom: 8px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
         }
 
-        label { display: block; font-size: 12px; color: #6c757d; margin-bottom: 6px; font-weight: 600; }
+        label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
         select, input { 
             width: 100%; 
             padding: 12px; 
-            background-color: #f8f9fa; 
-            border: 1px solid #ced4da; 
+            background-color: var(--bg-input); 
+            border: 1px solid var(--border-color); 
             border-radius: 12px; 
-            color: #212529; 
+            color: var(--text-main); 
             margin-bottom: 14px; 
             font-size: 14px; 
             outline: none; 
-            transition: border-color 0.2s, box-shadow 0.2s; 
             -webkit-appearance: none; 
-        }
-        select:focus, input:focus { 
-            border-color: #0d3b66; 
-            background-color: #ffffff; 
-            box-shadow: 0 0 0 3px rgba(13, 59, 102, 0.1);
         }
 
         button { 
@@ -111,10 +167,8 @@
             font-weight: bold; 
             cursor: pointer; 
             font-size: 15px; 
-            transition: transform 0.1s, box-shadow 0.2s; 
             box-shadow: 0 4px 12px rgba(13, 59, 102, 0.25);
         }
-        button:active { transform: scale(0.98); }
 
         .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; color: white; border: none; cursor: pointer; }
 
@@ -125,18 +179,18 @@
             right: 0; 
             max-width: 500px; 
             margin: 0 auto; 
-            background-color: #ffffff; 
+            background-color: var(--bg-card); 
             display: flex; 
             justify-content: space-around; 
             padding: 10px 0 24px 0; 
-            border-top: 1px solid #dee2e6; 
+            border-top: 1px solid var(--border-color); 
             z-index: 100; 
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.06); 
+            box-shadow: 0 -4px 20px var(--shadow-card); 
         }
         .nav-item { 
             background: none; 
             border: none; 
-            color: #adb5bd; 
+            color: var(--text-muted); 
             font-size: 11px; 
             display: flex; 
             flex-direction: column; 
@@ -145,51 +199,39 @@
             padding: 0; 
             width: auto; 
             box-shadow: none;
-            transition: color 0.2s;
         }
-        .nav-item.active { color: #0d3b66; font-weight: bold; }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; transition: transform 0.2s; }
-        .nav-item.active i { transform: translateY(-2px); color: #0d3b66; }
+        .nav-item.active { color: #4dabf7; font-weight: bold; }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; }
 
-        /* CALENDÁRIO COM NOVAS CORES PASTEL */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
-        .cal-head { font-size: 11px; color: #6c757d; font-weight: bold; padding-bottom: 4px; }
+        .cal-head { font-size: 11px; color: var(--text-muted); font-weight: bold; padding-bottom: 4px; }
         .cal-empty { background: transparent; }
-        .cal-day { background-color: #f1f3f5; padding: 10px 0; border-radius: 10px; font-size: 12px; cursor: pointer; border: 1px solid transparent; color: #495057; font-weight: 500; transition: all 0.2s; }
+        .cal-day { background-color: var(--bg-input); padding: 10px 0; border-radius: 10px; font-size: 12px; cursor: pointer; border: 1px solid transparent; color: var(--text-main); font-weight: 500; }
         
-        /* ESTILOS PASTEL SOLICITADOS */
-        .cal-day.Presencial { background-color: #d1e7dd; color: #0f5132; font-weight: bold; border: 1px solid #badbcc; }
-        .cal-day.HomeOffice { background-color: #cff4fc; color: #055160; font-weight: bold; border: 1px solid #b6effb; }
-        .cal-day.Folga { background-color: #ffe5d0; color: #984c00; font-weight: bold; border: 1px solid #fdd1ac; }
-        .cal-day.FinalDeSemana { background-color: #f3e8ff; color: #6b21a8; font-weight: bold; border: 1px solid #e9d5ff; }
+        /* CALENDÁRIO COM CORES VIVAS E DESTAQUE */
+        .cal-day.Presencial { background-color: var(--bg-presencial); color: var(--color-presencial); font-weight: bold; border: 1px solid var(--color-presencial); }
+        .cal-day.HomeOffice { background-color: var(--bg-homeoffice); color: var(--color-homeoffice); font-weight: bold; border: 1px solid var(--color-homeoffice); }
+        .cal-day.Folga { background-color: var(--bg-folga); color: var(--color-folga); font-weight: bold; border: 1px solid var(--color-folga); }
+        .cal-day.FinalDeSemana { background-color: var(--bg-fds); color: var(--color-fds); font-weight: bold; border: 1px solid var(--color-fds); }
 
-        /* ETIQUETAS (BADGES) COM CORES PASTEL E TEXTO ESCURO */
-        .badge-tipo {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        .badge-Presencial { background-color: #d1e7dd; color: #0f5132; border: 1px solid #29694c; }
-        .badge-HomeOffice { background-color: #cff4fc; color: #055160; border: 1px solid #24a2bb; }
-        .badge-Folga { background-color: #ffe5d0; color: #984c00; border: 1px solid #f58d38; }
-        .badge-FinalDeSemana { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #9852e2; }
+        /* BADGES DO HISTÓRICO COM CORES VIVAS */
+        .badge-tipo { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+        .badge-Presencial { background-color: var(--bg-presencial); color: var(--color-presencial); border: 1px solid var(--color-presencial); }
+        .badge-HomeOffice { background-color: var(--bg-homeoffice); color: var(--color-homeoffice); border: 1px solid var(--color-homeoffice); }
+        .badge-Folga { background-color: var(--bg-folga); color: var(--color-folga); border: 1px solid var(--color-folga); }
+        .badge-FinalDeSemana { background-color: var(--bg-fds); color: var(--color-fds); border: 1px solid var(--color-fds); }
 
         .hist-item-card {
-            background-color: #ffffff;
+            background-color: var(--bg-card);
             border-radius: 14px;
             margin-bottom: 12px;
-            border: 1px solid #e9ecef;
+            border: 1px solid var(--border-card);
             overflow: hidden;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 8px var(--shadow-card);
         }
-        .hist-item-card:active { transform: scale(0.99); }
         .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; }
-        .hist-details { display: none; padding: 12px 14px 14px 14px; border-top: 1px dashed #dee2e6; background-color: #f8f9fa; }
+        .hist-details { display: none; padding: 12px 14px 14px 14px; border-top: 1px dashed var(--border-color); background-color: var(--bg-input); }
         .hist-details.active { display: block; animation: fadeIn 0.25s ease-in-out; }
 
         @keyframes fadeIn {
@@ -197,24 +239,31 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .map-hist { height: 150px; width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid #ced4da; }
-        .thumb-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid #ced4da; }
-        #mapaLocal { height: 180px; width: 100%; border-radius: 12px; margin-bottom: 14px; border: 1px solid #ced4da; z-index: 1; }
+        .map-hist { height: 150px; width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid var(--border-color); }
+        .thumb-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); }
+        #mapaLocal { height: 180px; width: 100%; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--border-color); z-index: 1; }
 
         .status-msg { text-align: center; font-size: 13px; margin-top: 10px; font-weight: 500; }
-        .status-sucesso { color: #0f5132; }
-        .status-erro { color: #842029; }
+        .status-sucesso { color: #2e7d32; }
+        .status-erro { color: #c62828; }
 
         .chart-container { position: relative; height: 220px; width: 100%; margin-top: 10px; }
-        .progress-bar-bg { background-color: #e9ecef; height: 14px; border-radius: 7px; overflow: hidden; margin-top: 10px; }
-        .progress-bar-fill { background-color: #0f5132; height: 100%; width: 0%; transition: width 0.5s ease; }
+        .progress-bar-bg { background-color: var(--bg-input); height: 14px; border-radius: 7px; overflow: hidden; margin-top: 10px; }
+        .progress-bar-fill { background-color: #2e7d32; height: 100%; width: 0%; transition: width 0.5s ease; }
     </style>
 </head>
 <body>
 
+    <!-- CABEÇALHO COM BOTÃO DE DEMA/MODO ESCURO -->
     <div class="header">
-        <i class="bi bi-geo-alt-fill"></i>
-        <h1>Controle Híbrido</h1>
+        <div class="header-title">
+            <i class="bi bi-geo-alt-fill"></i>
+            <h1>Controle Híbrido</h1>
+        </div>
+        <button id="btnTheme" class="btn-theme-toggle" onclick="alternarTema()">
+            <i class="bi bi-moon-fill"></i>
+            <span id="lblTheme">Escuro</span>
+        </button>
     </div>
 
     <div id="pullIndicator">🔄 Puxe para atualizar dados...</div>
@@ -225,11 +274,11 @@
         <div id="tabDashboard" class="tab-content active">
             <div class="card">
                 <h3>📊 Meta de Frequência do Mês</h3>
-                <p id="totalPresencial" style="font-size: 22px; color: #0f5132; font-weight: bold; margin-bottom: 4px;">0 / 0 Dias Presenciais</p>
-                <p id="pctProgressoAtual" style="font-size: 14px; color: #0d3b66; font-weight: 700; margin-bottom: 6px;">
+                <p id="totalPresencial" style="font-size: 22px; color: #2e7d32; font-weight: bold; margin-bottom: 4px;">0 / 0 Dias Presenciais</p>
+                <p id="pctProgressoAtual" style="font-size: 14px; color: #4dabf7; font-weight: 700; margin-bottom: 6px;">
                     🎯 Progresso Atual: 0% da meta alcançada
                 </p>
-                <p id="pctPresencial" style="color: #6c757d; font-size: 12px;">Calculando meta do mês...</p>
+                <p id="pctPresencial" style="color: var(--text-muted); font-size: 12px;">Calculando meta do mês...</p>
                 <div class="progress-bar-bg">
                     <div id="progressBarFill" class="progress-bar-fill"></div>
                 </div>
@@ -244,7 +293,7 @@
 
             <div class="card">
                 <h3>📌 Métricas Detalhadas do Mês</h3>
-                <div id="detalhesMétricas" style="font-size: 13px; line-height: 1.8; color: #495057;">
+                <div id="detalhesMétricas" style="font-size: 13px; line-height: 1.8; color: var(--text-main);">
                     Carregando métricas...
                 </div>
             </div>
@@ -284,7 +333,7 @@
             </div>
         </div>
 
-        <!-- 📅 ABA 3: CALENDÁRIO COM AUTO-PREENCHIMENTO DE FINAIS DE SEMANA -->
+        <!-- 📅 ABA 3: CALENDÁRIO -->
         <div id="tabCalendario" class="tab-content">
             <div class="card">
                 <h3>📅 Calendário do Mês (Clique para registrar)</h3>
@@ -299,7 +348,7 @@
                     <span>📜 Histórico Completo</span>
                     <button class="btn-export" onclick="exportarCSV()">📥 Baixar CSV</button>
                 </h3>
-                <p style="font-size: 11px; color: #6c757d; margin-bottom: 12px;">💡 Clique em qualquer registro para ver o mapa e detalhes.</p>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">💡 Clique em qualquer registro para ver o mapa e detalhes.</p>
                 <div id="listaHistorico">Carregando histórico...</div>
             </div>
         </div>
@@ -345,6 +394,38 @@
             19: 11, 20: 12, 21: 12, 22: 13, 23: 13, 24: 14
         };
 
+        // ALTERNÂNCIA DE TEMA (MODO CLARO E MODO ESCURO)
+        function alternarTema() {
+            const body = document.body;
+            const btnIcon = document.querySelector('#btnTheme i');
+            const lblTheme = document.getElementById('lblTheme');
+
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+
+            localStorage.setItem('tema_preferido', isDark ? 'dark' : 'light');
+
+            if (isDark) {
+                btnIcon.className = "bi bi-sun-fill";
+                lblTheme.innerText = "Claro";
+            } else {
+                btnIcon.className = "bi bi-moon-fill";
+                lblTheme.innerText = "Escuro";
+            }
+
+            if (registrosGlobais.length > 0) renderizarDashboard();
+        }
+
+        // CARREGA TEMA SALVO AO ABRIR O APP
+        function carregarTemaSalvo() {
+            const temaSalvo = localStorage.getItem('tema_preferido');
+            if (temaSalvo === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('#btnTheme i').className = "bi bi-sun-fill";
+                document.getElementById('lblTheme').innerText = "Claro";
+            }
+        }
+
         function calcularDiasUteisMesAtual() {
             const agora = new Date();
             const ano = agora.getFullYear();
@@ -386,7 +467,7 @@
 
                 if (notificar) alert("✅ Dados atualizados com sucesso!");
             } catch (err) {
-                document.getElementById("listaHistorico").innerHTML = "<p style='color:#842029;'>Erro ao carregar dados do Supabase.</p>";
+                document.getElementById("listaHistorico").innerHTML = "<p style='color:#c62828;'>Erro ao carregar dados do Supabase.</p>";
             }
         }
 
@@ -399,8 +480,6 @@
             const diasUteisDoMes = calcularDiasUteisMesAtual();
             const metaPresencialExigida = REGRAS_PLANILHA_VIVO[diasUteisDoMes] || 12;
             const pctMetaExigida = ((metaPresencialExigida / diasUteisDoMes) * 100).toFixed(2);
-            
-            // CÁLCULO DA PORCENTAGEM DE PROGRESSO ALCANÇADA NO MOMENTO
             const pctProgressoAtual = Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1);
 
             document.getElementById('totalPresencial').innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
@@ -419,28 +498,31 @@
             const ctx = document.getElementById('graficoJornada').getContext('2d');
             if (chartInstancia) chartInstancia.destroy();
 
+            const isDark = document.body.classList.contains('dark-mode');
+            const textColor = isDark ? '#ffffff' : '#212529';
+
             chartInstancia = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Home Office', 'Folga (Feriado)', 'Final de Semana', 'Presencial'],
                     datasets: [{
                         data: [homeOffice, folgas, fdsRegistrados, presenciais],
-                        backgroundColor: ['#cff4fc', '#ffe5d0', '#f3e8ff', '#d1e7dd'],
+                        // PALETA DE CORES VIVAS E SATURADAS
+                        backgroundColor: ['#0288d1', '#ed6c02', '#9c27b0', '#2e7d32'],
                         borderWidth: 2,
-                        borderColor: '#ffffff'
+                        borderColor: isDark ? '#1e1e1e' : '#ffffff'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'right', labels: { color: '#212529', font: { size: 12 } } }
+                        legend: { position: 'right', labels: { color: textColor, font: { size: 12, weight: 'bold' } } }
                     }
                 }
             });
         }
 
-        // RENDERIZAÇÃO DO CALENDÁRIO COM AUTO-PREENCHIMENTO DE FINAIS DE SEMANA
         function renderizarCalendario() {
             const grid = document.getElementById('gridCalendario');
             const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -460,10 +542,7 @@
                 const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
                 const dataStr = `${ano}-${mesPad}-${diaPad}`;
 
-                // VERIFICA SE EXISTE UM REGISTRO SALVO NO SUPABASE PARA ESTA DATA
                 const reg = registrosGlobais.find(r => r.data === dataStr);
-                
-                // VERIFICA SE O DIA DA SEMANA É SÁBADO (6) OU DOMINGO (0)
                 const diaSemanaObj = new Date(ano, mes, d).getDay();
                 const ehFinalDeSemana = (diaSemanaObj === 0 || diaSemanaObj === 6);
 
@@ -471,7 +550,6 @@
                 if (reg) {
                     tipoClasse = reg.tipo.replace(/\s+/g, '');
                 } else if (ehFinalDeSemana) {
-                    // AUTO-PREENCHIMENTO VISUAL DE SÁBADOS E DOMINGOS
                     tipoClasse = 'FinalDeSemana';
                 }
 
@@ -483,7 +561,7 @@
         function renderizarHistorico() {
             const container = document.getElementById('listaHistorico');
             if (!registrosGlobais || registrosGlobais.length === 0) {
-                container.innerHTML = "<p style='color:#6c757d; font-size:13px; text-align:center;'>Nenhum ponto registrado ainda.</p>";
+                container.innerHTML = "<p style='color:var(--text-muted); font-size:13px; text-align:center;'>Nenhum ponto registrado ainda.</p>";
                 return;
             }
 
@@ -495,13 +573,13 @@
                             <div>
                                 <span class="badge-tipo badge-${tipoClasse}">${r.tipo}</span><br>
                                 <strong>#${r.id} - ${r.empresa || 'Vivo'}</strong><br>
-                                <small style="color:#6c757d;">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small>
+                                <small style="color:var(--text-muted);">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small>
                             </div>
-                            ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img">` : '<i class="bi bi-chevron-down" style="color:#adb5bd; font-size:18px;"></i>'}
+                            ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img">` : '<i class="bi bi-chevron-down" style="color:var(--text-muted); font-size:18px;"></i>'}
                         </div>
 
                         <div id="card-detail-${r.id}" class="hist-details">
-                            <p style="font-size:12px; color:#495057; margin-top:4px;">
+                            <p style="font-size:12px; color:var(--text-main); margin-top:4px;">
                                 <strong>📝 Observação:</strong> ${r.observacao || 'Nenhuma observação informada.'}
                             </p>
                             <div id="map-hist-${r.id}" class="map-hist"></div>
@@ -621,6 +699,7 @@
             }
         });
 
+        carregarTemaSalvo();
         carregarDados();
     </script>
 </body>
