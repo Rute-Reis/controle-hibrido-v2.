@@ -11,13 +11,14 @@
     <meta name="apple-mobile-web-app-title" content="Controle Híbrido">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/app-icon.png">
 
-    <!-- FOLHA DE ESTILO DO MAPA (LEAFLET.JS) -->
+    <!-- FOLHA DE ESTILO DO MAPA (LEAFLET) E ÍCONES VETORIAIS (BOOTSTRAP ICONS) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         
-        /* MODO CLARO COM GRADIENTE SUAVE */
+        /* MODO CLARO ELEGANTE */
         body { 
             background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%); 
             color: #212529; 
@@ -28,7 +29,7 @@
             -webkit-tap-highlight-color: transparent; 
         }
         
-        /* CABEÇALHO ELEGANTE */
+        /* CABEÇALHO */
         .header { 
             text-align: center; 
             padding: 20px 15px 15px 15px; 
@@ -40,10 +41,10 @@
             gap: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .header img { width: 28px; height: 28px; object-fit: contain; }
+        .header i { font-size: 24px; color: #0d3b66; }
         .header h1 { font-size: 19px; color: #0d3b66; font-weight: 700; letter-spacing: 0.3px; }
 
-        /* INDICADOR DE PULL-TO-REFRESH */
+        /* PULL-TO-REFRESH INDICATOR */
         #pullIndicator {
             text-align: center;
             font-size: 12px;
@@ -63,7 +64,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* CARTÕES NO MODO CLARO COM SOMBRA SOFT */
         .card { 
             background-color: #ffffff; 
             padding: 18px; 
@@ -109,14 +109,14 @@
             font-weight: bold; 
             cursor: pointer; 
             font-size: 15px; 
-            transition: transform 0.1s, box-shadow 0.2s; 
+            transition: transform 0.1s; 
             box-shadow: 0 4px 10px rgba(13, 59, 102, 0.2);
         }
         button:active { transform: scale(0.98); }
 
         .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; }
 
-        /* BARRA DE NAVEGAÇÃO INFERIOR COM OS NOVOS ÍCONES */
+        /* BARRA DE NAVEGAÇÃO INFERIOR COM ÍCONES VETORIAIS */
         .nav-bar { 
             position: fixed; 
             bottom: 0; 
@@ -147,18 +147,14 @@
             transition: color 0.2s;
         }
         .nav-item.active { color: #0d3b66; font-weight: bold; }
-        .nav-item img { 
-            width: 22px; 
-            height: 22px; 
-            margin-bottom: 4px; 
-            object-fit: contain; 
-            opacity: 0.4;
-            transition: opacity 0.2s, transform 0.2s;
+        .nav-item i { 
+            font-size: 20px; 
+            margin-bottom: 2px; 
+            transition: transform 0.2s;
         }
-        .nav-item.active img { 
-            opacity: 1; 
+        .nav-item.active i { 
             transform: translateY(-2px);
-            filter: drop-shadow(0px 2px 4px rgba(13, 59, 102, 0.3));
+            color: #0d3b66;
         }
 
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
@@ -189,13 +185,13 @@
 </head>
 <body>
 
-    <!-- CABEÇALHO SUPERIOR COM ÍCONE LOCATION_HYBRID -->
+    <!-- CABEÇALHO SUPERIOR -->
     <div class="header">
-        <img src="/static/elementos/location_hybrid.png" alt="Ícone Híbrido">
+        <i class="bi bi-geo-alt-fill"></i>
         <h1>Controle Híbrido</h1>
     </div>
 
-    <!-- INDICADOR VISUAL DO GESTO PULL-TO-REFRESH -->
+    <!-- INDICADOR VISUAL DO PULL-TO-REFRESH -->
     <div id="pullIndicator">🔄 Puxe para atualizar dados...</div>
 
     <div class="container">
@@ -268,7 +264,7 @@
             </div>
         </div>
 
-        <!-- 📜 ABA 4: HISTÓRICO COM BOTÃO DE EXPORTAR CSV -->
+        <!-- 📜 ABA 4: HISTÓRICO -->
         <div id="tabHistorico" class="tab-content">
             <div class="card">
                 <h3>
@@ -286,22 +282,22 @@
         <img id="imgExpanded" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- BARRA DE NAVEGAÇÃO INFERIOR COM OS ÍCONES PERSONALIZADOS DA PASTA ELEMENTOS -->
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR COM ÍCONES BOOTSTRAP -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="mudarAba('tabDashboard', this)">
-            <img src="/static/elementos/home.png" alt="Dashboard">
+            <i class="bi bi-house-door-fill"></i>
             Dashboard
         </button>
         <button class="nav-item" onclick="mudarAba('tabNovo', this)">
-            <img src="/static/elementos/add.png" alt="Novo">
+            <i class="bi bi-plus-circle-fill"></i>
             Novo
         </button>
         <button class="nav-item" onclick="mudarAba('tabCalendario', this)">
-            <img src="/static/elementos/calendar.png" alt="Calendário">
+            <i class="bi bi-calendar-event-fill"></i>
             Calendário
         </button>
         <button class="nav-item" onclick="mudarAba('tabHistorico', this)">
-            <img src="/static/elementos/history.png" alt="Histórico">
+            <i class="bi bi-clock-history"></i>
             Histórico
         </button>
     </div>
@@ -561,9 +557,7 @@
             }
         });
 
-        // -------------------------------------------------------------
-        // LÓGICA DE PULL-TO-REFRESH (PUXAR PARA BAIXO PARA ATUALIZAR)
-        // -------------------------------------------------------------
+        // PULL-TO-REFRESH
         let startY = 0;
         let currentY = 0;
         let isPulling = false;
