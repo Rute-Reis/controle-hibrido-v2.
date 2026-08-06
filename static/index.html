@@ -18,16 +18,18 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         
+        /* MODO CLARO MODERNO COM GRADIENTE SUAVE */
         body { 
             background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%); 
             color: #212529; 
-            padding-bottom: 90px; 
+            padding-bottom: 95px; 
             max-width: 500px; 
             margin: 0 auto; 
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent; 
         }
         
+        /* CABEÇALHO COM SOMBRA SOFT */
         .header { 
             text-align: center; 
             padding: 20px 15px 15px 15px; 
@@ -37,11 +39,12 @@
             justify-content: center; 
             align-items: center; 
             gap: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
         .header i { font-size: 24px; color: #0d3b66; }
         .header h1 { font-size: 19px; color: #0d3b66; font-weight: 700; letter-spacing: 0.3px; }
 
+        /* INDICADOR VISUAL DO PULL-TO-REFRESH */
         #pullIndicator {
             text-align: center;
             font-size: 12px;
@@ -61,13 +64,15 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* CARTÕES REFINADOS COM BORDAS ARREDONDADAS */
         .card { 
             background-color: #ffffff; 
             padding: 18px; 
-            border-radius: 16px; 
+            border-radius: 18px; 
             margin-bottom: 16px; 
             border: 1px solid #e9ecef; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04); 
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .card h3 { 
             font-size: 15px; 
@@ -86,15 +91,19 @@
             padding: 12px; 
             background-color: #f8f9fa; 
             border: 1px solid #ced4da; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             color: #212529; 
             margin-bottom: 14px; 
             font-size: 14px; 
             outline: none; 
-            transition: border-color 0.2s; 
+            transition: border-color 0.2s, box-shadow 0.2s; 
             -webkit-appearance: none; 
         }
-        select:focus, input:focus { border-color: #0d3b66; background-color: #ffffff; }
+        select:focus, input:focus { 
+            border-color: #0d3b66; 
+            background-color: #ffffff; 
+            box-shadow: 0 0 0 3px rgba(13, 59, 102, 0.1);
+        }
 
         button { 
             width: 100%; 
@@ -106,13 +115,14 @@
             font-weight: bold; 
             cursor: pointer; 
             font-size: 15px; 
-            transition: transform 0.1s; 
-            box-shadow: 0 4px 10px rgba(13, 59, 102, 0.2);
+            transition: transform 0.1s, box-shadow 0.2s; 
+            box-shadow: 0 4px 12px rgba(13, 59, 102, 0.25);
         }
         button:active { transform: scale(0.98); }
 
         .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; color: white; border: none; cursor: pointer; }
 
+        /* BARRA DE NAVEGAÇÃO SUPERIOR/INFERIOR REFINADA */
         .nav-bar { 
             position: fixed; 
             bottom: 0; 
@@ -123,10 +133,10 @@
             background-color: #ffffff; 
             display: flex; 
             justify-content: space-around; 
-            padding: 10px 0 22px 0; 
+            padding: 10px 0 24px 0; 
             border-top: 1px solid #dee2e6; 
             z-index: 100; 
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.05); 
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.06); 
         }
         .nav-item { 
             background: none; 
@@ -143,27 +153,45 @@
             transition: color 0.2s;
         }
         .nav-item.active { color: #0d3b66; font-weight: bold; }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; transition: transform 0.2s; }
+        .nav-item.active i { transform: translateY(-2px); color: #0d3b66; }
 
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
         .cal-head { font-size: 11px; color: #6c757d; font-weight: bold; padding-bottom: 4px; }
         .cal-empty { background: transparent; }
-        .cal-day { background-color: #f1f3f5; padding: 10px 0; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent; color: #495057; font-weight: 500; transition: all 0.2s; }
-        .cal-day.Presencial { background-color: #4caf50; color: #fff; font-weight: bold; }
-        .cal-day.HomeOffice { background-color: #2196f3; color: #fff; font-weight: bold; }
-        .cal-day.Folga { background-color: #ff9800; color: #fff; font-weight: bold; }
-        .cal-day.FinalDeSemana { background-color: #9c27b0; color: #fff; font-weight: bold; }
+        .cal-day { background-color: #f1f3f5; padding: 10px 0; border-radius: 10px; font-size: 12px; cursor: pointer; border: 1px solid transparent; color: #495057; font-weight: 500; transition: all 0.2s; }
+        .cal-day.Presencial { background-color: #2e7d32; color: #fff; font-weight: bold; }
+        .cal-day.HomeOffice { background-color: #1976d2; color: #fff; font-weight: bold; }
+        .cal-day.Folga { background-color: #f57c00; color: #fff; font-weight: bold; }
+        .cal-day.FinalDeSemana { background-color: #7b1fa2; color: #fff; font-weight: bold; }
 
-        /* CARDS EXPANSÍVEIS DO HISTÓRICO */
+        /* NOVAS ETIQUETAS (BADGES) COLORIDAS PARA OS CARDS DO HISTÓRICO */
+        .badge-tipo {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .badge-Presencial { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .badge-HomeOffice { background-color: #e3f2fd; color: #1976d2; border: 1px solid #bbdefb; }
+        .badge-Folga { background-color: #fff3e0; color: #f57c00; border: 1px solid #ffe0b2; }
+        .badge-FinalDeSemana { background-color: #f3e5f5; color: #7b1fa2; border: 1px solid #e1bee7; }
+
+        /* CARDS EXPANSÍVEIS COM ANIMAÇÃO SUAVE */
         .hist-item-card {
-            background-color: #f8f9fa;
-            border-radius: 12px;
+            background-color: #ffffff;
+            border-radius: 14px;
             margin-bottom: 12px;
             border: 1px solid #e9ecef;
-            border-left: 5px solid #0d3b66;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .hist-item-card:active {
+            transform: scale(0.99);
         }
         .hist-header-content {
             padding: 14px;
@@ -173,24 +201,30 @@
         }
         .hist-details {
             display: none;
-            padding: 0 14px 14px 14px;
+            padding: 12px 14px 14px 14px;
             border-top: 1px dashed #dee2e6;
-            margin-top: 6px;
-            background-color: #ffffff;
+            background-color: #f8f9fa;
         }
         .hist-details.active {
             display: block;
+            animation: fadeIn 0.25s ease-in-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .map-hist {
             height: 150px;
             width: 100%;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-top: 10px;
             border: 1px solid #ced4da;
         }
 
-        .thumb-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid #ced4da; }
-        #mapaLocal { height: 180px; width: 100%; border-radius: 10px; margin-bottom: 14px; border: 1px solid #ced4da; z-index: 1; }
+        .thumb-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid #ced4da; }
+        #mapaLocal { height: 180px; width: 100%; border-radius: 12px; margin-bottom: 14px; border: 1px solid #ced4da; z-index: 1; }
 
         .status-msg { text-align: center; font-size: 13px; margin-top: 10px; font-weight: 500; }
         .status-sucesso { color: #2e7d32; }
@@ -324,6 +358,8 @@
         let mapaInstancia = null;
         let chartInstancia = null;
         let mapasHistInstancias = {};
+        let latAtual = null;
+        let lngAtual = null;
 
         const REGRAS_PLANILHA_VIVO = {
             1: 1, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 5, 10: 6,
@@ -340,9 +376,7 @@
             let diasUteis = 0;
             for (let dia = 1; dia <= totalDiasNoMes; dia++) {
                 const diaSemana = new Date(ano, mes, dia).getDay();
-                if (diaSemana !== 0 && diaSemana !== 6) {
-                    diasUteis++;
-                }
+                if (diaSemana !== 0 && diaSemana !== 6) diasUteis++;
             }
             return diasUteis;
         }
@@ -410,7 +444,7 @@
                     labels: ['Home Office', 'Folga (Feriado)', 'Final de Semana', 'Presencial'],
                     datasets: [{
                         data: [homeOffice, folgas, fds, presenciais],
-                        backgroundColor: ['#2196f3', '#ff9800', '#9c27b0', '#4caf50'],
+                        backgroundColor: ['#1976d2', '#f57c00', '#7b1fa2', '#2e7d32'],
                         borderWidth: 2,
                         borderColor: '#ffffff'
                     }]
@@ -425,7 +459,7 @@
             });
         }
 
-        // RENDERIZAÇÃO DOS CARDS EXPANSÍVEIS NO HISTÓRICO
+        // RENDERIZAÇÃO DOS CARDS DO HISTÓRICO COM BADGES E ANIMAÇÃO SUAVE
         function renderizarHistorico() {
             const container = document.getElementById('listaHistorico');
             if (!registrosGlobais || registrosGlobais.length === 0) {
@@ -433,28 +467,30 @@
                 return;
             }
 
-            container.innerHTML = registrosGlobais.map(r => `
-                <div class="hist-item-card" onclick="alternarDetalhesCard(${r.id}, ${r.latitude || -23.55052}, ${r.longitude || -46.633308})">
-                    <div class="hist-header-content">
-                        <div>
-                            <strong>#${r.id} - ${r.tipo}</strong><br>
-                            <small style="color:#6c757d;">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small><br>
-                            <small style="color:#495057;">🏢 ${r.empresa || 'Vivo'}</small>
+            container.innerHTML = registrosGlobais.map(r => {
+                const tipoClasse = (r.tipo || 'Presencial').replace(/\s+/g, '');
+                return `
+                    <div class="hist-item-card" onclick="alternarDetalhesCard(${r.id}, ${r.latitude || -23.55052}, ${r.longitude || -46.633308})">
+                        <div class="hist-header-content">
+                            <div>
+                                <span class="badge-tipo badge-${tipoClasse}">${r.tipo}</span><br>
+                                <strong>#${r.id} - ${r.empresa || 'Vivo'}</strong><br>
+                                <small style="color:#6c757d;">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small>
+                            </div>
+                            ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img">` : '<i class="bi bi-chevron-down" style="color:#adb5bd; font-size:18px;"></i>'}
                         </div>
-                        ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img">` : '<i class="bi bi-chevron-down" style="color:#aaa;"></i>'}
-                    </div>
 
-                    <div id="card-detail-${r.id}" class="hist-details">
-                        <p style="font-size:12px; color:#495057; margin-top:8px;">
-                            <strong>📝 Observação:</strong> ${r.observacao || 'Nenhuma observação informada.'}
-                        </p>
-                        <div id="map-hist-${r.id}" class="map-hist"></div>
+                        <div id="card-detail-${r.id}" class="hist-details">
+                            <p style="font-size:12px; color:#495057; margin-top:4px;">
+                                <strong>📝 Observação:</strong> ${r.observacao || 'Nenhuma observação informada.'}
+                            </p>
+                            <div id="map-hist-${r.id}" class="map-hist"></div>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        // ALTERNA A VISIBILIDADE DO CARD E CARREGA O MAPA DELE
         function alternarDetalhesCard(id, lat, lng) {
             const detailDiv = document.getElementById(`card-detail-${id}`);
             const isVisible = detailDiv.classList.contains('active');
@@ -476,7 +512,6 @@
             }
         }
 
-        // FUNÇÃO DE EXPORTAÇÃO CSV COMPATÍVEL COM IPHONE (BLOB)
         function exportarCSV() {
             if (!registrosGlobais || registrosGlobais.length === 0) {
                 alert("Não existem registros para exportar!");
@@ -490,7 +525,6 @@
                 csvContent += linha + "\n";
             });
 
-            // CRIAÇÃO DE BLOB PARA COMPATIBILIDADE COM O SAFARI / IOS
             const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             
@@ -546,78 +580,53 @@
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    mapaInstancia.setView([lat, lng], 15);
-                    L.marker([lat, lng]).addTo(mapaInstancia).bindPopup("Você está aqui!").openPopup();
+                    latAtual = pos.coords.latitude;
+                    lngAtual = pos.coords.longitude;
+                    
+                    mapaInstancia.setView([latAtual, lngAtual], 15);
+                    L.marker([latAtual, lngAtual]).addTo(mapaInstancia).bindPopup("Você está aqui!").openPopup();
                 });
             }
         }
 
-        // VARIÁVEIS GLOBAIS PARA GUARDAR A POSIÇÃO ATUAL DO GPS
-let latAtual = null;
-let lngAtual = null;
+        document.getElementById('formPonto').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSalvar');
+            const statusDiv = document.getElementById('statusMsg');
+            const formData = new FormData(e.target);
 
-function carregarMapaGPS() {
-    if (mapaInstancia) return;
+            if (latAtual && lngAtual) {
+                formData.append('latitude', latAtual);
+                formData.append('longitude', lngAtual);
+            }
 
-    const latPadrao = -23.55052;
-    const lngPadrao = -46.633308;
+            btn.disabled = true;
+            btn.innerText = "Salvando no Supabase...";
 
-    mapaInstancia = L.map('mapaLocal').setView([latPadrao, lngPadrao], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaInstancia);
+            try {
+                const res = await fetch(`${API_URL}/registrar`, { method: 'POST', body: formData });
+                const data = await res.json();
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-            latAtual = pos.coords.latitude;
-            lngAtual = pos.coords.longitude;
-            
-            mapaInstancia.setView([latAtual, lngAtual], 15);
-            L.marker([latAtual, lngAtual]).addTo(mapaInstancia).bindPopup("Você está aqui!").openPopup();
+                if (data.sucesso) {
+                    statusDiv.className = "status-msg status-sucesso";
+                    statusDiv.innerText = "✅ " + data.mensagem;
+                    e.target.reset();
+                    document.getElementById('empresa').value = 'Vivo';
+                    await carregarDados();
+                    const btnHist = document.querySelectorAll('.nav-item')[3];
+                    mudarAba('tabHistorico', btnHist);
+                } else {
+                    statusDiv.className = "status-msg status-erro";
+                    statusDiv.innerText = "❌ Erro ao registrar ponto.";
+                }
+            } catch (err) {
+                statusDiv.className = "status-msg status-erro";
+                statusDiv.innerText = "❌ Erro ao comunicar com a API.";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "📍 Salvar Ponto Agora";
+            }
         });
-    }
-}
-
-// SUBMISSÃO DO FORMULÁRIO ENVIANDO LATITUDE E LONGITUDE
-document.getElementById('formPonto').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('btnSalvar');
-    const statusDiv = document.getElementById('statusMsg');
-    const formData = new FormData(e.target);
-
-    // Anexa as coordenadas capturadas pelo GPS no envio
-    if (latAtual && lngAtual) {
-        formData.append('latitude', latAtual);
-        formData.append('longitude', lngAtual);
-    }
-
-    btn.disabled = true;
-    btn.innerText = "Salvando no Supabase...";
-
-    try {
-        const res = await fetch(`${API_URL}/registrar`, { method: 'POST', body: formData });
-        const data = await res.json();
-
-        if (data.sucesso) {
-            statusDiv.className = "status-msg status-sucesso";
-            statusDiv.innerText = "✅ " + data.mensagem;
-            e.target.reset();
-            document.getElementById('empresa').value = 'Vivo';
-            await carregarDados();
-            const btnHist = document.querySelectorAll('.nav-item')[3];
-            mudarAba('tabHistorico', btnHist);
-        } else {
-            statusDiv.className = "status-msg status-erro";
-            statusDiv.innerText = "❌ Erro ao registrar ponto.";
-        }
-    } catch (err) {
-        statusDiv.className = "status-msg status-erro";
-        statusDiv.innerText = "❌ Erro ao comunicar com a API.";
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "📍 Salvar Ponto Agora";
-    }
-});
 
         carregarDados();
     </script>
