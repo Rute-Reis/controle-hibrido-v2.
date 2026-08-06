@@ -18,7 +18,6 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         
-        /* MODO CLARO MODERNO COM GRADIENTE SUAVE */
         body { 
             background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%); 
             color: #212529; 
@@ -29,7 +28,6 @@
             -webkit-tap-highlight-color: transparent; 
         }
         
-        /* CABEÇALHO COM SOMBRA SOFT */
         .header { 
             text-align: center; 
             padding: 20px 15px 15px 15px; 
@@ -44,7 +42,6 @@
         .header i { font-size: 24px; color: #0d3b66; }
         .header h1 { font-size: 19px; color: #0d3b66; font-weight: 700; letter-spacing: 0.3px; }
 
-        /* INDICADOR VISUAL DO PULL-TO-REFRESH */
         #pullIndicator {
             text-align: center;
             font-size: 12px;
@@ -64,7 +61,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* CARTÕES REFINADOS COM BORDAS ARREDONDADAS */
         .card { 
             background-color: #ffffff; 
             padding: 18px; 
@@ -122,7 +118,6 @@
 
         .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; color: white; border: none; cursor: pointer; }
 
-        /* BARRA DE NAVEGAÇÃO SUPERIOR/INFERIOR REFINADA */
         .nav-bar { 
             position: fixed; 
             bottom: 0; 
@@ -156,30 +151,32 @@
         .nav-item i { font-size: 20px; margin-bottom: 2px; transition: transform 0.2s; }
         .nav-item.active i { transform: translateY(-2px); color: #0d3b66; }
 
+        /* CALENDÁRIO COM NOVAS CORES PASTEL */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
         .cal-head { font-size: 11px; color: #6c757d; font-weight: bold; padding-bottom: 4px; }
         .cal-empty { background: transparent; }
         .cal-day { background-color: #f1f3f5; padding: 10px 0; border-radius: 10px; font-size: 12px; cursor: pointer; border: 1px solid transparent; color: #495057; font-weight: 500; transition: all 0.2s; }
-        .cal-day.Presencial { background-color: #2e7d32; color: #fff; font-weight: bold; }
-        .cal-day.HomeOffice { background-color: #1976d2; color: #fff; font-weight: bold; }
-        .cal-day.Folga { background-color: #f57c00; color: #fff; font-weight: bold; }
-        .cal-day.FinalDeSemana { background-color: #7b1fa2; color: #fff; font-weight: bold; }
+        
+        /* ESTILOS PASTEL SOLICITADOS */
+        .cal-day.Presencial { background-color: #d1e7dd; color: #0f5132; font-weight: bold; border: 1px solid #badbcc; }
+        .cal-day.HomeOffice { background-color: #cff4fc; color: #055160; font-weight: bold; border: 1px solid #b6effb; }
+        .cal-day.Folga { background-color: #ffe5d0; color: #984c00; font-weight: bold; border: 1px solid #fdd1ac; }
+        .cal-day.FinalDeSemana { background-color: #f3e8ff; color: #6b21a8; font-weight: bold; border: 1px solid #e9d5ff; }
 
-        /* NOVAS ETIQUETAS (BADGES) COLORIDAS PARA OS CARDS DO HISTÓRICO */
+        /* ETIQUETAS (BADGES) COM CORES PASTEL E TEXTO ESCURO */
         .badge-tipo {
             display: inline-block;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
-        .badge-Presencial { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        .badge-HomeOffice { background-color: #e3f2fd; color: #1976d2; border: 1px solid #bbdefb; }
-        .badge-Folga { background-color: #fff3e0; color: #f57c00; border: 1px solid #ffe0b2; }
-        .badge-FinalDeSemana { background-color: #f3e5f5; color: #7b1fa2; border: 1px solid #e1bee7; }
+        .badge-Presencial { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        .badge-HomeOffice { background-color: #cff4fc; color: #055160; border: 1px solid #b6effb; }
+        .badge-Folga { background-color: #ffe5d0; color: #984c00; border: 1px solid #fdd1ac; }
+        .badge-FinalDeSemana { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
 
-        /* CARDS EXPANSÍVEIS COM ANIMAÇÃO SUAVE */
         .hist-item-card {
             background-color: #ffffff;
             border-radius: 14px;
@@ -190,49 +187,27 @@
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-        .hist-item-card:active {
-            transform: scale(0.99);
-        }
-        .hist-header-content {
-            padding: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .hist-details {
-            display: none;
-            padding: 12px 14px 14px 14px;
-            border-top: 1px dashed #dee2e6;
-            background-color: #f8f9fa;
-        }
-        .hist-details.active {
-            display: block;
-            animation: fadeIn 0.25s ease-in-out;
-        }
+        .hist-item-card:active { transform: scale(0.99); }
+        .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .hist-details { display: none; padding: 12px 14px 14px 14px; border-top: 1px dashed #dee2e6; background-color: #f8f9fa; }
+        .hist-details.active { display: block; animation: fadeIn 0.25s ease-in-out; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .map-hist {
-            height: 150px;
-            width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-            border: 1px solid #ced4da;
-        }
-
+        .map-hist { height: 150px; width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid #ced4da; }
         .thumb-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid #ced4da; }
         #mapaLocal { height: 180px; width: 100%; border-radius: 12px; margin-bottom: 14px; border: 1px solid #ced4da; z-index: 1; }
 
         .status-msg { text-align: center; font-size: 13px; margin-top: 10px; font-weight: 500; }
-        .status-sucesso { color: #2e7d32; }
-        .status-erro { color: #c62828; }
+        .status-sucesso { color: #0f5132; }
+        .status-erro { color: #842029; }
 
         .chart-container { position: relative; height: 220px; width: 100%; margin-top: 10px; }
-        .progress-bar-bg { background-color: #e9ecef; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
-        .progress-bar-fill { background-color: #2e7d32; height: 100%; width: 0%; transition: width 0.5s ease; }
+        .progress-bar-bg { background-color: #e9ecef; height: 14px; border-radius: 7px; overflow: hidden; margin-top: 10px; }
+        .progress-bar-fill { background-color: #0f5132; height: 100%; width: 0%; transition: width 0.5s ease; }
     </style>
 </head>
 <body>
@@ -250,8 +225,11 @@
         <div id="tabDashboard" class="tab-content active">
             <div class="card">
                 <h3>📊 Meta de Frequência do Mês</h3>
-                <p id="totalPresencial" style="font-size: 22px; color: #2e7d32; font-weight: bold; margin-bottom: 4px;">0 / 0 Dias Presenciais</p>
-                <p id="pctPresencial" style="color: #6c757d; font-size: 13px;">Calculando meta do mês...</p>
+                <p id="totalPresencial" style="font-size: 22px; color: #0f5132; font-weight: bold; margin-bottom: 4px;">0 / 0 Dias Presenciais</p>
+                <p id="pctProgressoAtual" style="font-size: 14px; color: #0d3b66; font-weight: 700; margin-bottom: 6px;">
+                    🎯 Progresso Atual: 0% da meta alcançada
+                </p>
+                <p id="pctPresencial" style="color: #6c757d; font-size: 12px;">Calculando meta do mês...</p>
                 <div class="progress-bar-bg">
                     <div id="progressBarFill" class="progress-bar-fill"></div>
                 </div>
@@ -306,7 +284,7 @@
             </div>
         </div>
 
-        <!-- 📅 ABA 3: CALENDÁRIO -->
+        <!-- 📅 ABA 3: CALENDÁRIO COM AUTO-PREENCHIMENTO DE FINAIS DE SEMANA -->
         <div id="tabCalendario" class="tab-content">
             <div class="card">
                 <h3>📅 Calendário do Mês (Clique para registrar)</h3>
@@ -408,7 +386,7 @@
 
                 if (notificar) alert("✅ Dados atualizados com sucesso!");
             } catch (err) {
-                document.getElementById("listaHistorico").innerHTML = "<p style='color:#c62828;'>Erro ao carregar dados do Supabase.</p>";
+                document.getElementById("listaHistorico").innerHTML = "<p style='color:#842029;'>Erro ao carregar dados do Supabase.</p>";
             }
         }
 
@@ -416,22 +394,25 @@
             const presenciais = registrosGlobais.filter(r => r.tipo === 'Presencial').length;
             const homeOffice = registrosGlobais.filter(r => r.tipo === 'Home Office').length;
             const folgas = registrosGlobais.filter(r => r.tipo === 'Folga / Feriado').length;
-            const fds = registrosGlobais.filter(r => r.tipo === 'Final de Semana').length;
+            const fdsRegistrados = registrosGlobais.filter(r => r.tipo === 'Final de Semana').length;
             
             const diasUteisDoMes = calcularDiasUteisMesAtual();
             const metaPresencialExigida = REGRAS_PLANILHA_VIVO[diasUteisDoMes] || 12;
             const pctMetaExigida = ((metaPresencialExigida / diasUteisDoMes) * 100).toFixed(2);
-            const pctProgresso = Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1);
+            
+            // CÁLCULO DA PORCENTAGEM DE PROGRESSO ALCANÇADA NO MOMENTO
+            const pctProgressoAtual = Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1);
 
             document.getElementById('totalPresencial').innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
-            document.getElementById('pctPresencial').innerText = `Mês tem ${diasUteisDoMes} dias úteis | Meta: ${metaPresencialExigida} presenciais (${pctMetaExigida}%)`;
-            document.getElementById('progressBarFill').style.width = `${pctProgresso}%`;
+            document.getElementById('pctProgressoAtual').innerText = `🎯 Progresso Atual: ${pctProgressoAtual}% da meta concluída`;
+            document.getElementById('pctPresencial').innerText = `Mês tem ${diasUteisDoMes} dias úteis | Meta Mínima Vivo: ${metaPresencialExigida} dias (${pctMetaExigida}%)`;
+            document.getElementById('progressBarFill').style.width = `${pctProgressoAtual}%`;
 
             document.getElementById('detalhesMétricas').innerHTML = `
                 🏢 <strong>Presenciais Realizados:</strong> ${presenciais} / ${metaPresencialExigida} dias<br>
                 🏠 <strong>Home Office Realizados:</strong> ${homeOffice} dia(s)<br>
                 🏖️ <strong>Folga / Feriado:</strong> ${folgas} dia(s)<br>
-                📅 <strong>Final de Semana:</strong> ${fds} dia(s)<br>
+                📅 <strong>Finais de Semana no Mês:</strong> Calculados automaticamente no calendário<br>
                 📊 <strong>Total de Dias Úteis no Mês:</strong> ${diasUteisDoMes} dias
             `;
 
@@ -443,8 +424,8 @@
                 data: {
                     labels: ['Home Office', 'Folga (Feriado)', 'Final de Semana', 'Presencial'],
                     datasets: [{
-                        data: [homeOffice, folgas, fds, presenciais],
-                        backgroundColor: ['#1976d2', '#f57c00', '#7b1fa2', '#2e7d32'],
+                        data: [homeOffice, folgas, fdsRegistrados, presenciais],
+                        backgroundColor: ['#cff4fc', '#ffe5d0', '#f3e8ff', '#d1e7dd'],
                         borderWidth: 2,
                         borderColor: '#ffffff'
                     }]
@@ -459,7 +440,46 @@
             });
         }
 
-        // RENDERIZAÇÃO DOS CARDS DO HISTÓRICO COM BADGES E ANIMAÇÃO SUAVE
+        // RENDERIZAÇÃO DO CALENDÁRIO COM AUTO-PREENCHIMENTO DE FINAIS DE SEMANA
+        function renderizarCalendario() {
+            const grid = document.getElementById('gridCalendario');
+            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            let html = diasSemana.map(d => `<div class="cal-head">${d}</div>`).join('');
+
+            const agora = new Date();
+            const ano = agora.getFullYear();
+            const mes = agora.getMonth();
+
+            const primeiroDiaDaSemana = new Date(ano, mes, 1).getDay();
+            const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+            for (let i = 0; i < primeiroDiaDaSemana; i++) html += `<div class="cal-empty"></div>`;
+
+            for (let d = 1; d <= diasNoMes; d++) {
+                const diaPad = d < 10 ? '0' + d : d;
+                const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
+                const dataStr = `${ano}-${mesPad}-${diaPad}`;
+
+                // VERIFICA SE EXISTE UM REGISTRO SALVO NO SUPABASE PARA ESTA DATA
+                const reg = registrosGlobais.find(r => r.data === dataStr);
+                
+                // VERIFICA SE O DIA DA SEMANA É SÁBADO (6) OU DOMINGO (0)
+                const diaSemanaObj = new Date(ano, mes, d).getDay();
+                const ehFinalDeSemana = (diaSemanaObj === 0 || diaSemanaObj === 6);
+
+                let tipoClasse = '';
+                if (reg) {
+                    tipoClasse = reg.tipo.replace(/\s+/g, '');
+                } else if (ehFinalDeSemana) {
+                    // AUTO-PREENCHIMENTO VISUAL DE SÁBADOS E DOMINGOS
+                    tipoClasse = 'FinalDeSemana';
+                }
+
+                html += `<div class="cal-day ${tipoClasse}" onclick="agendarData('${dataStr}')" title="Clique para registrar">${d}</div>`;
+            }
+            grid.innerHTML = html;
+        }
+
         function renderizarHistorico() {
             const container = document.getElementById('listaHistorico');
             if (!registrosGlobais || registrosGlobais.length === 0) {
@@ -534,33 +554,6 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-
-        function renderizarCalendario() {
-            const grid = document.getElementById('gridCalendario');
-            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-            let html = diasSemana.map(d => `<div class="cal-head">${d}</div>`).join('');
-
-            const agora = new Date();
-            const ano = agora.getFullYear();
-            const mes = agora.getMonth();
-
-            const primeiroDiaDaSemana = new Date(ano, mes, 1).getDay();
-            const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-
-            for (let i = 0; i < primeiroDiaDaSemana; i++) html += `<div class="cal-empty"></div>`;
-
-            for (let d = 1; d <= diasNoMes; d++) {
-                const diaPad = d < 10 ? '0' + d : d;
-                const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
-                const dataStr = `${ano}-${mesPad}-${diaPad}`;
-
-                const reg = registrosGlobais.find(r => r.data === dataStr);
-                const tipoClasse = reg ? reg.tipo.replace(/\s+/g, '') : '';
-
-                html += `<div class="cal-day ${tipoClasse}" onclick="agendarData('${dataStr}')" title="Clique para registrar">${d}</div>`;
-            }
-            grid.innerHTML = html;
         }
 
         function agendarData(dataStr) {
