@@ -1,0 +1,21 @@
+{
+  "short_name": "Controle Híbrido",
+  "name": "Meu Controle Híbrido - Frequência Vivo",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2619/2619286.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2619/2619286.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#121212",
+  "theme_color": "#1e1e1e",
+  "display": "standalone",
+  "orientation": "portrait"
+}
