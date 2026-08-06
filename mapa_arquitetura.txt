@@ -1,0 +1,44 @@
++-----------------------------------------------------------------------------+
+|                          MAPA DA NOVA ARQUITETURA                           |
++-----------------------------------------------------------------------------+
+|                                                                             |
+|  FASE 1: ESTRUTURA LOCAL E BACKEND (FASTAPI)                                |
+|  - Criar a nova pasta do projeto e o ambiente virtual (venv).              |
+|  - Escrever o arquivo `main.py` da API REST.                                |
+|  - Testar os endpoints locais via Swagger (/docs).                          |
+|                                                                             |
+|  FASE 2: BANCO DE DADOS E STORAGE (SUPABASE)                                |
+|  - Criar a tabela `registros` no PostgreSQL do Supabase.                   |
+|  - Criar o bucket público `comprovantes` para as fotos.                      |
+|  - Conectar a API Python ao Supabase.                                       |
+|                                                                             |
+|  FASE 3: FRONTEND (HTML / CSS / JS)                                         |
+|  - Criar a interface Web/Mobile com câmara nativa, calendário e gráficos.    |
+|  - Conectar o formulário do Frontend com a API do Backend.                  |
+|                                                                             |
+|  FASE 4: DEPLOY NO RENDER.COM                                               |
+|  - Subir a nova pasta para o GitHub e conectar ao Render.                   |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+                                    ↓↓                                          
+
+
++-----------------------------------------------------------------------------+
+|                        ESTRUTURA DO PROJETO NO SUPABASE                     |
++-----------------------------------------------------------------------------+
+|                                                                             |
+|  1. CREDENCIAIS (Settings > API)                                             |
+|     - SUPABASE_URL                                                          |
+|     - SUPABASE_KEY (anon key)                                                |
+|                                                                             |
+|  2. BANCO DE DADOS (Table Editor > registros)                                |
+|     - id (int8, primary key)                                                |
+|     - created_at (timestamp)                                                |
+|     - data (text) | hora (text) | tipo (text)                                 |
+|     - empresa (text) | observacao (text) | foto_url (text)                    |
+|                                                                             |
+|  3. STORAGE (Storage > Buckets > comprovantes)                               |
+|     - Bucket Público para armazenar as fotos enviadas pelo celular.         |
+|                                                                             |
++-----------------------------------------------------------------------------+

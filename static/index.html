@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meu Controle Híbrido v2</title>
+    
+    <!-- TAGS DE SUPORTE NATIVO PARA IOS (APPLE IPHONE) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Controle Híbrido">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2619/2619286.png">
+
+    <!-- FOLHA DE ESTILO DO MAPA (LEAFLET.JS) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #121212; color: #ffffff; padding-bottom: 85px; max-width: 500px; margin: 0 auto; -webkit-tap-highlight-color: transparent; }
+        
+        .header { text-align: center; padding: 22px 15px 18px 15px; background: linear-gradient(180deg, #1e1e1e 0%, #121212 100%); border-bottom: 1px solid #2a2a2a; }
+        .header h1 { font-size: 20px; color: #4dabf7; letter-spacing: 0.5px; }
+
+        .container { padding: 15px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card { background-color: #1e1e1e; padding: 18px; border-radius: 14px; margin-bottom: 16px; border: 1px solid #2a2a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .card h3 { font-size: 15px; margin-bottom: 14px; color: #e0e0e0; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; }
+
+        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 500; }
+        select, input { width: 100%; padding: 12px; background-color: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: white; margin-bottom: 14px; font-size: 14px; outline: none; transition: border 0.2s; -webkit-appearance: none; }
+        select:focus, input:focus { border-color: #4dabf7; }
+
+        button { width: 100%; padding: 14px; background: linear-gradient(90deg, #0d3b66 0%, #134e89 100%); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; transition: transform 0.1s; }
+        button:active { transform: scale(0.98); }
+
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; background-color: #1e1e1e; display: flex; justify-content: space-around; padding: 12px 0 20px 0; border-top: 1px solid #2a2a2a; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.4); }
+        .nav-item { background: none; border: none; color: #888; font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 0; width: auto; }
+        .nav-item.active { color: #4dabf7; font-weight: bold; }
+        .nav-item span { font-size: 20px; margin-bottom: 2px; }
+
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
+        .cal-head { font-size: 11px; color: #888; font-weight: bold; padding-bottom: 4px; }
+        .cal-empty { background: transparent; }
+        .cal-day { background-color: #2a2a2a; padding: 10px 0; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .cal-day.Presencial { background-color: #4caf50; color: #fff; font-weight: bold; }
+        .cal-day.HomeOffice { background-color: #2196f3; color: #fff; font-weight: bold; }
+        .cal-day.Folga { background-color: #ff9800; color: #fff; font-weight: bold; }
+        .cal-day.FinalDeSemana { background-color: #9c27b0; color: #fff; font-weight: bold; }
+        .cal-day:hover { border-color: #4dabf7; transform: translateY(-2px); }
+
+        .hist-item { background-color: #2a2a2a; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #4dabf7; }
+        .thumb-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 1px solid #444; }
+        
+        #mapaLocal { height: 180px; width: 100%; border-radius: 10px; margin-bottom: 14px; border: 1px solid #333; z-index: 1; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
+        .modal img { max-width: 90%; max-height: 80%; border-radius: 10px; }
+
+        .status-msg { text-align: center; font-size: 13px; margin-top: 10px; font-weight: 500; }
+        .status-sucesso { color: #4caf50; }
+        .status-erro { color: #f44336; }
+
+        .chart-container { position: relative; height: 220px; width: 100%; margin-top: 10px; }
+        .progress-bar-bg { background-color: #2a2a2a; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
+        .progress-bar-fill { background-color: #4caf50; height: 100%; width: 0%; transition: width 0.5s ease; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🏢 Meu Controle Híbrido</h1>
+    </div>
+
+    <div class="container">
+        
+        <!-- 🏠 ABA 1: DASHBOARD -->
+        <div id="tabDashboard" class="tab-content active">
+            <div class="card">
+                <h3>📊 Meta de Frequência do Mês</h3>
+                <p id="totalPresencial" style="font-size: 22px; color: #4caf50; font-weight: bold; margin-bottom: 4px;">0 / 0 Dias Presenciais</p>
+                <p id="pctPresencial" style="color: #aaa; font-size: 13px;">Calculando meta do mês...</p>
+                <div class="progress-bar-bg">
+                    <div id="progressBarFill" class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📈 Distribuição de Jornada</h3>
+                <div class="chart-container">
+                    <canvas id="graficoJornada"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📌 Métricas Detalhadas do Mês</h3>
+                <div id="detalhesMétricas" style="font-size: 13px; line-height: 1.8; color: #ccc;">
+                    Carregando métricas...
+                </div>
+            </div>
+        </div>
+
+        <!-- ➕ ABA 2: NOVO REGISTRO -->
+        <div id="tabNovo" class="tab-content">
+            <div class="card">
+                <h3>📍 Registrar Novo Ponto</h3>
+                <form id="formPonto">
+                    <label for="dataManual">Data (Deixe em branco para HOJE)</label>
+                    <input type="date" id="dataManual" name="data_manual">
+
+                    <label for="tipo">Tipo de Jornada</label>
+                    <select id="tipo" name="tipo">
+                        <option value="Presencial">🏢 Presencial</option>
+                        <option value="Home Office">🏠 Home Office</option>
+                        <option value="Folga / Feriado">🏖️ Folga / Feriado</option>
+                        <option value="Final de Semana">📅 Final de Semana</option>
+                    </select>
+
+                    <label for="empresa">Empresa</label>
+                    <input type="text" id="empresa" name="empresa" value="Vivo">
+
+                    <label for="foto">Foto do Comprovante (Câmera ou Galeria)</label>
+                    <input type="file" id="foto" name="foto" accept="image/*" capture="environment">
+
+                    <label for="observacao">Observação / Nota</label>
+                    <input type="text" id="observacao" name="observacao" placeholder="Ex: Trabalho presencial na sede">
+
+                    <label>Sua Localização (GPS)</label>
+                    <div id="mapaLocal"></div>
+
+                    <button type="submit" id="btnSalvar">📍 Salvar Ponto Agora</button>
+                </form>
+                <div id="statusMsg" class="status-msg"></div>
+            </div>
+        </div>
+
+        <!-- 📅 ABA 3: CALENDÁRIO -->
+        <div id="tabCalendario" class="tab-content">
+            <div class="card">
+                <h3>📅 Calendário do Mês (Clique para registrar)</h3>
+                <div class="cal-grid" id="gridCalendario"></div>
+            </div>
+        </div>
+
+        <!-- 📜 ABA 4: HISTÓRICO -->
+        <div id="tabHistorico" class="tab-content">
+            <div class="card">
+                <h3>📜 Histórico Completo (Supabase)</h3>
+                <div id="listaHistorico">Carregando histórico...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE AMPLIAR FOTO -->
+    <div id="imgModal" class="modal" onclick="fecharModal()">
+        <img id="imgExpanded" src="" alt="Foto Ampliada">
+    </div>
+
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR/INFERIOR (ADAPTADA COM MARGEM PARA O ONSCREEN HOME BAR DO IPHONE) -->
+    <div class="nav-bar">
+        <button class="nav-item active" onclick="mudarAba('tabDashboard', this)"><span>🏠</span>Dashboard</button>
+        <button class="nav-item" onclick="mudarAba('tabNovo', this)"><span>➕</span>Novo</button>
+        <button class="nav-item" onclick="mudarAba('tabCalendario', this)"><span>📅</span>Calendário</button>
+        <button class="nav-item" onclick="mudarAba('tabHistorico', this)"><span>📜</span>Histórico</button>
+    </div>
+
+    <!-- BIBLIOTECAS EXTERNAS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const API_URL = "/api";
+        let registrosGlobais = [];
+        let mapaInstancia = null;
+        let chartInstancia = null;
+
+        const REGRAS_PLANILHA_VIVO = {
+            1: 1, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 5, 10: 6,
+            11: 6, 12: 7, 13: 7, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10,
+            19: 11, 20: 12, 21: 12, 22: 13, 23: 13, 24: 14
+        };
+
+        function calcularDiasUteisMesAtual() {
+            const agora = new Date();
+            const ano = agora.getFullYear();
+            const mes = agora.getMonth();
+            const totalDiasNoMes = new Date(ano, mes + 1, 0).getDate();
+            
+            let diasUteis = 0;
+            for (let dia = 1; dia <= totalDiasNoMes; dia++) {
+                const diaSemana = new Date(ano, mes, dia).getDay();
+                if (diaSemana !== 0 && diaSemana !== 6) {
+                    diasUteis++;
+                }
+            }
+            return diasUteis;
+        }
+
+        function mudarAba(abaId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(abaId).classList.add('active');
+            if (btn) btn.classList.add('active');
+            
+            if (abaId === 'tabDashboard') renderizarDashboard();
+            if (abaId === 'tabCalendario') renderizarCalendario();
+            if (abaId === 'tabNovo') carregarMapaGPS();
+        }
+
+        function formatarDataBR(dataISO) {
+            if (!dataISO) return "";
+            const partes = dataISO.split("-");
+            if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            return dataISO;
+        }
+
+        async function carregarDados() {
+            try {
+                const res = await fetch(`${API_URL}/registros`);
+                registrosGlobais = await res.json();
+                renderizarDashboard();
+                renderizarHistorico();
+            } catch (err) {
+                document.getElementById("listaHistorico").innerHTML = "<p style='color:#f44336;'>Erro ao carregar dados do Supabase.</p>";
+            }
+        }
+
+        function renderizarDashboard() {
+            const presenciais = registrosGlobais.filter(r => r.tipo === 'Presencial').length;
+            const homeOffice = registrosGlobais.filter(r => r.tipo === 'Home Office').length;
+            const folgas = registrosGlobais.filter(r => r.tipo === 'Folga / Feriado').length;
+            const fds = registrosGlobais.filter(r => r.tipo === 'Final de Semana').length;
+            
+            const diasUteisDoMes = calcularDiasUteisMesAtual();
+            const metaPresencialExigida = REGRAS_PLANILHA_VIVO[diasUteisDoMes] || 12;
+            const pctMetaExigida = ((metaPresencialExigida / diasUteisDoMes) * 100).toFixed(2);
+            const pctProgresso = Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1);
+
+            document.getElementById('totalPresencial').innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
+            document.getElementById('pctPresencial').innerText = `Mês tem ${diasUteisDoMes} dias úteis | Meta: ${metaPresencialExigida} presenciais (${pctMetaExigida}%)`;
+            document.getElementById('progressBarFill').style.width = `${pctProgresso}%`;
+
+            document.getElementById('detalhesMétricas').innerHTML = `
+                🏢 <strong>Presenciais Realizados:</strong> ${presenciais} / ${metaPresencialExigida} dias<br>
+                🏠 <strong>Home Office Realizados:</strong> ${homeOffice} dia(s)<br>
+                🏖️ <strong>Folga / Feriado:</strong> ${folgas} dia(s)<br>
+                📅 <strong>Final de Semana:</strong> ${fds} dia(s)<br>
+                📊 <strong>Total de Dias Úteis no Mês:</strong> ${diasUteisDoMes} dias
+            `;
+
+            const ctx = document.getElementById('graficoJornada').getContext('2d');
+            if (chartInstancia) chartInstancia.destroy();
+
+            chartInstancia = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Home Office', 'Folga (Feriado)', 'Final de Semana', 'Presencial'],
+                    datasets: [{
+                        data: [homeOffice, folgas, fds, presenciais],
+                        backgroundColor: ['#2196f3', '#ff9800', '#9c27b0', '#4caf50'],
+                        borderWidth: 2,
+                        borderColor: '#1e1e1e'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#ffffff', font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderizarHistorico() {
+            const container = document.getElementById('listaHistorico');
+            if (!registrosGlobais || registrosGlobais.length === 0) {
+                container.innerHTML = "<p style='color:#888; font-size:13px; text-align:center;'>Nenhum ponto registrado ainda.</p>";
+                return;
+            }
+
+            container.innerHTML = registrosGlobais.map(r => `
+                <div class="hist-item">
+                    <div>
+                        <strong>#${r.id} - ${r.tipo}</strong><br>
+                        <small style="color:#aaa;">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small><br>
+                        <small style="color:#888;">🏢 ${r.empresa || 'Vivo'}${r.observacao ? ' - ' + r.observacao : ''}</small>
+                    </div>
+                    ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img" onclick="expandirImagem('${r.foto_url}')" title="Clique para ampliar">` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderizarCalendario() {
+            const grid = document.getElementById('gridCalendario');
+            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            let html = diasSemana.map(d => `<div class="cal-head">${d}</div>`).join('');
+
+            const agora = new Date();
+            const ano = agora.getFullYear();
+            const mes = agora.getMonth();
+
+            const primeiroDiaDaSemana = new Date(ano, mes, 1).getDay();
+            const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+            for (let i = 0; i < primeiroDiaDaSemana; i++) {
+                html += `<div class="cal-empty"></div>`;
+            }
+
+            for (let d = 1; d <= diasNoMes; d++) {
+                const diaPad = d < 10 ? '0' + d : d;
+                const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
+                const dataStr = `${ano}-${mesPad}-${diaPad}`;
+
+                const reg = registrosGlobais.find(r => r.data === dataStr);
+                const tipoClasse = reg ? reg.tipo.replace(/\s+/g, '') : '';
+
+                html += `<div class="cal-day ${tipoClasse}" onclick="agendarData('${dataStr}')" title="Clique para registrar">${d}</div>`;
+            }
+            grid.innerHTML = html;
+        }
+
+        function agendarData(dataStr) {
+            document.getElementById('dataManual').value = dataStr;
+            const btnNovo = document.querySelectorAll('.nav-item')[1];
+            mudarAba('tabNovo', btnNovo);
+        }
+
+        function carregarMapaGPS() {
+            if (mapaInstancia) return;
+
+            const latPadrao = -23.55052;
+            const lngPadrao = -46.633308;
+
+            mapaInstancia = L.map('mapaLocal').setView([latPadrao, lngPadrao], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(mapaInstancia);
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    mapaInstancia.setView([lat, lng], 15);
+                    L.marker([lat, lng]).addTo(mapaInstancia).bindPopup("Você está aqui!").openPopup();
+                });
+            }
+        }
+
+        function expandirImagem(url) {
+            document.getElementById('imgExpanded').src = url;
+            document.getElementById('imgModal').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('imgModal').style.display = 'none';
+        }
+
+        document.getElementById('formPonto').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSalvar');
+            const statusDiv = document.getElementById('statusMsg');
+            const formData = new FormData(e.target);
+
+            btn.disabled = true;
+            btn.innerText = "Salvando no Supabase...";
+
+            try {
+                const res = await fetch(`${API_URL}/registrar`, { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.sucesso) {
+                    statusDiv.className = "status-msg status-sucesso";
+                    statusDiv.innerText = "✅ " + data.mensagem;
+                    e.target.reset();
+                    document.getElementById('empresa').value = 'Vivo';
+                    await carregarDados();
+                    const btnHist = document.querySelectorAll('.nav-item')[3];
+                    mudarAba('tabHistorico', btnHist);
+                } else {
+                    statusDiv.className = "status-msg status-erro";
+                    statusDiv.innerText = "❌ Erro ao registrar ponto.";
+                }
+            } catch (err) {
+                statusDiv.className = "status-msg status-erro";
+                statusDiv.innerText = "❌ Erro ao comunicar com a API.";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "📍 Salvar Ponto Agora";
+            }
+        });
+
+        carregarDados();
+    </script>
+</body>
+</html>
