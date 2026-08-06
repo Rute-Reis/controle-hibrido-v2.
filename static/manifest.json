@@ -3,12 +3,12 @@
   "name": "Meu Controle Híbrido - Vivo",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3068/3068626.png",
+      "src": "/elementos/app-icon.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3068/3068626.png",
+      "src": "/elementos/app-icon.png",
       "type": "image/png",
       "sizes": "512x512"
     }
