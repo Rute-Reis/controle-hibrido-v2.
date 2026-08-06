@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meu Controle Híbrido v2</title>
     
-    <!-- TAGS DE SUPORTE NATIVO PARA IOS (APPLE IPHONE) -->
+    <!-- SUPORTE NATIVO E ÍCONE PARA IOS (IPHONE) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Controle Híbrido">
-    <!-- ÍCONE HÍBRIDO OFICIAL LOCAL (COMPATÍVEL COM IOS) -->
-    <link rel="apple-touch-icon" sizes="180x180" href="elementos\app-icon.png.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/app-icon.png">
 
     <!-- FOLHA DE ESTILO DO MAPA (LEAFLET.JS) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -19,15 +18,19 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         body { background-color: #121212; color: #ffffff; padding-bottom: 85px; max-width: 500px; margin: 0 auto; -webkit-tap-highlight-color: transparent; }
         
-        .header { text-align: center; padding: 22px 15px 18px 15px; background: linear-gradient(180deg, #1e1e1e 0%, #121212 100%); border-bottom: 1px solid #2a2a2a; }
-        .header h1 { font-size: 20px; color: #4dabf7; letter-spacing: 0.5px; }
+        /* CABEÇALHO COM BOTÃO DE ATUALIZAR REFRESH */
+        .header { text-align: center; padding: 18px 15px; background: linear-gradient(180deg, #1e1e1e 0%, #121212 100%); border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 18px; color: #4dabf7; letter-spacing: 0.5px; }
+
+        .btn-refresh { background: #2a2a2a; color: #4dabf7; border: 1px solid #3d3d3d; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.2s; }
+        .btn-refresh:active { background: #3d3d3d; }
 
         .container { padding: 15px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
         .card { background-color: #1e1e1e; padding: 18px; border-radius: 14px; margin-bottom: 16px; border: 1px solid #2a2a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .card h3 { font-size: 15px; margin-bottom: 14px; color: #e0e0e0; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; }
+        .card h3 { font-size: 15px; margin-bottom: 14px; color: #e0e0e0; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 500; }
         select, input { width: 100%; padding: 12px; background-color: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: white; margin-bottom: 14px; font-size: 14px; outline: none; transition: border 0.2s; -webkit-appearance: none; }
@@ -35,6 +38,8 @@
 
         button { width: 100%; padding: 14px; background: linear-gradient(90deg, #0d3b66 0%, #134e89 100%); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; transition: transform 0.1s; }
         button:active { transform: scale(0.98); }
+
+        .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #2b5278; border-radius: 6px; }
 
         .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; background-color: #1e1e1e; display: flex; justify-content: space-around; padding: 12px 0 20px 0; border-top: 1px solid #2a2a2a; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.4); }
         .nav-item { background: none; border: none; color: #888; font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 0; width: auto; }
@@ -70,8 +75,10 @@
 </head>
 <body>
 
+    <!-- CABEÇALHO SUPERIOR COM BOTÃO DE ATUALIZAR -->
     <div class="header">
-        <h1>🏢 Meu Controle Híbrido</h1>
+        <h1>🏢 Controle Híbrido</h1>
+        <button class="btn-refresh" onclick="carregarDados(true)">🔄 Atualizar</button>
     </div>
 
     <div class="container">
@@ -144,10 +151,13 @@
             </div>
         </div>
 
-        <!-- 📜 ABA 4: HISTÓRICO -->
+        <!-- 📜 ABA 4: HISTÓRICO COM EXPORTAÇÃO CSV -->
         <div id="tabHistorico" class="tab-content">
             <div class="card">
-                <h3>📜 Histórico Completo (Supabase)</h3>
+                <h3>
+                    <span>📜 Histórico Completo</span>
+                    <button class="btn-export" onclick="exportarCSV()">📥 Baixar CSV</button>
+                </h3>
                 <div id="listaHistorico">Carregando histórico...</div>
             </div>
         </div>
@@ -159,7 +169,7 @@
         <img id="imgExpanded" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- BARRA DE NAVEGAÇÃO SUPERIOR/INFERIOR (ADAPTADA COM MARGEM PARA O ONSCREEN HOME BAR DO IPHONE) -->
+    <!-- BARRA DE NAVEGAÇÃO -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="mudarAba('tabDashboard', this)"><span>🏠</span>Dashboard</button>
         <button class="nav-item" onclick="mudarAba('tabNovo', this)"><span>➕</span>Novo</button>
@@ -217,12 +227,17 @@
             return dataISO;
         }
 
-        async function carregarDados() {
+        // CARREGA E ATUALIZA DADOS DO SUPABASE COM FEEDBACK VISUAL
+        async function carregarDados(notificar = false) {
             try {
                 const res = await fetch(`${API_URL}/registros`);
                 registrosGlobais = await res.json();
                 renderizarDashboard();
                 renderizarHistorico();
+
+                if (notificar) {
+                    alert("✅ Dados atualizados com sucesso do Supabase!");
+                }
             } catch (err) {
                 document.getElementById("listaHistorico").innerHTML = "<p style='color:#f44336;'>Erro ao carregar dados do Supabase.</p>";
             }
@@ -295,6 +310,28 @@
                     ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img" onclick="expandirImagem('${r.foto_url}')" title="Clique para ampliar">` : ''}
                 </div>
             `).join('');
+        }
+
+        function exportarCSV() {
+            if (!registrosGlobais || registrosGlobais.length === 0) {
+                alert("Não existem registros para exportar!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,ID;Data;Hora;Tipo;Empresa;Observacao;URL_Foto\n";
+
+            registrosGlobais.forEach(r => {
+                const linha = `${r.id};${formatarDataBR(r.data)};${r.hora};${r.tipo};${r.empresa || 'Vivo'};"${r.observacao || ''}";"${r.foto_url || ''}"`;
+                csvContent += linha + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `historico_ponto_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function renderizarCalendario() {
