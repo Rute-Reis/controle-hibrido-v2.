@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meu Controle Híbrido v2</title>
     
-    <!-- SUPORTE NATIVO E ÍCONE PARA IOS (IPHONE) -->
+    <!-- SUPORTE NATIVO PARA IOS (IPHONE) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Controle Híbrido">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/app-icon.png">
 
@@ -16,79 +16,196 @@
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #121212; color: #ffffff; padding-bottom: 85px; max-width: 500px; margin: 0 auto; -webkit-tap-highlight-color: transparent; }
         
-        /* CABEÇALHO COM BOTÃO DE ATUALIZAR REFRESH */
-        .header { text-align: right; padding: 15px 15px; background: linear-gradient(180deg, #1e1e1e 0%, #121212 100%); border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 15px; color: #4dabf7; letter-spacing: 0.5px; }
+        /* MODO CLARO COM GRADIENTE SUAVE */
+        body { 
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%); 
+            color: #212529; 
+            padding-bottom: 90px; 
+            max-width: 500px; 
+            margin: 0 auto; 
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        /* CABEÇALHO ELEGANTE */
+        .header { 
+            text-align: center; 
+            padding: 20px 15px 15px 15px; 
+            background: #ffffff; 
+            border-bottom: 1px solid #dee2e6; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .header img { width: 28px; height: 28px; object-fit: contain; }
+        .header h1 { font-size: 19px; color: #0d3b66; font-weight: 700; letter-spacing: 0.3px; }
 
-        .btn-refresh { background: #2a2a2a; color: #4dabf7; border: 1px solid #3d3d3d; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.2s; }
-        .btn-refresh:active { background: #3d3d3d; }
+        /* INDICADOR DE PULL-TO-REFRESH */
+        #pullIndicator {
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            height: 0;
+            overflow: hidden;
+            transition: height 0.2s ease, opacity 0.2s ease;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e9ecef;
+            font-weight: 600;
+        }
 
         .container { padding: 15px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .card { background-color: #1e1e1e; padding: 18px; border-radius: 14px; margin-bottom: 16px; border: 1px solid #2a2a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .card h3 { font-size: 15px; margin-bottom: 14px; color: #e0e0e0; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        /* CARTÕES NO MODO CLARO COM SOMBRA SOFT */
+        .card { 
+            background-color: #ffffff; 
+            padding: 18px; 
+            border-radius: 16px; 
+            margin-bottom: 16px; 
+            border: 1px solid #e9ecef; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
+        }
+        .card h3 { 
+            font-size: 15px; 
+            margin-bottom: 14px; 
+            color: #343a40; 
+            border-bottom: 1px solid #f1f3f5; 
+            padding-bottom: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
 
-        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 500; }
-        select, input { width: 100%; padding: 12px; background-color: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: white; margin-bottom: 14px; font-size: 14px; outline: none; transition: border 0.2s; -webkit-appearance: none; }
-        select:focus, input:focus { border-color: #4dabf7; }
+        label { display: block; font-size: 12px; color: #6c757d; margin-bottom: 6px; font-weight: 600; }
+        select, input { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: #f8f9fa; 
+            border: 1px solid #ced4da; 
+            border-radius: 10px; 
+            color: #212529; 
+            margin-bottom: 14px; 
+            font-size: 14px; 
+            outline: none; 
+            transition: border-color 0.2s; 
+            -webkit-appearance: none; 
+        }
+        select:focus, input:focus { border-color: #0d3b66; background-color: #ffffff; }
 
-        button { width: 100%; padding: 14px; background: linear-gradient(90deg, #0d3b66 0%, #134e89 100%); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; transition: transform 0.1s; }
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: linear-gradient(90deg, #0d3b66 0%, #134e89 100%); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 15px; 
+            transition: transform 0.1s, box-shadow 0.2s; 
+            box-shadow: 0 4px 10px rgba(13, 59, 102, 0.2);
+        }
         button:active { transform: scale(0.98); }
 
-        .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #2b5278; border-radius: 6px; }
+        .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; }
 
-        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; background-color: #1e1e1e; display: flex; justify-content: space-around; padding: 12px 0 20px 0; border-top: 1px solid #2a2a2a; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.4); }
-        .nav-item { background: none; border: none; color: #888; font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 0; width: auto; }
-        .nav-item.active { color: #4dabf7; font-weight: bold; }
-        .nav-item span { font-size: 20px; margin-bottom: 2px; }
+        /* BARRA DE NAVEGAÇÃO INFERIOR COM OS NOVOS ÍCONES */
+        .nav-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            max-width: 500px; 
+            margin: 0 auto; 
+            background-color: #ffffff; 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 10px 0 22px 0; 
+            border-top: 1px solid #dee2e6; 
+            z-index: 100; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05); 
+        }
+        .nav-item { 
+            background: none; 
+            border: none; 
+            color: #adb5bd; 
+            font-size: 11px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            cursor: pointer; 
+            padding: 0; 
+            width: auto; 
+            box-shadow: none;
+            transition: color 0.2s;
+        }
+        .nav-item.active { color: #0d3b66; font-weight: bold; }
+        .nav-item img { 
+            width: 22px; 
+            height: 22px; 
+            margin-bottom: 4px; 
+            object-fit: contain; 
+            opacity: 0.4;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .nav-item.active img { 
+            opacity: 1; 
+            transform: translateY(-2px);
+            filter: drop-shadow(0px 2px 4px rgba(13, 59, 102, 0.3));
+        }
 
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
-        .cal-head { font-size: 11px; color: #888; font-weight: bold; padding-bottom: 4px; }
+        .cal-head { font-size: 11px; color: #6c757d; font-weight: bold; padding-bottom: 4px; }
         .cal-empty { background: transparent; }
-        .cal-day { background-color: #2a2a2a; padding: 10px 0; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .cal-day { background-color: #f1f3f5; padding: 10px 0; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent; color: #495057; font-weight: 500; transition: all 0.2s; }
         .cal-day.Presencial { background-color: #4caf50; color: #fff; font-weight: bold; }
         .cal-day.HomeOffice { background-color: #2196f3; color: #fff; font-weight: bold; }
         .cal-day.Folga { background-color: #ff9800; color: #fff; font-weight: bold; }
         .cal-day.FinalDeSemana { background-color: #9c27b0; color: #fff; font-weight: bold; }
-        .cal-day:hover { border-color: #4dabf7; transform: translateY(-2px); }
 
-        .hist-item { background-color: #2a2a2a; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #4dabf7; }
-        .thumb-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 1px solid #444; }
+        .hist-item { background-color: #f8f9fa; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #0d3b66; border-top: 1px solid #e9ecef; border-right: 1px solid #e9ecef; border-bottom: 1px solid #e9ecef; }
+        .thumb-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 1px solid #ced4da; }
         
-        #mapaLocal { height: 180px; width: 100%; border-radius: 10px; margin-bottom: 14px; border: 1px solid #333; z-index: 1; }
+        #mapaLocal { height: 180px; width: 100%; border-radius: 10px; margin-bottom: 14px; border: 1px solid #ced4da; z-index: 1; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
         .modal img { max-width: 90%; max-height: 80%; border-radius: 10px; }
 
         .status-msg { text-align: center; font-size: 13px; margin-top: 10px; font-weight: 500; }
-        .status-sucesso { color: #4caf50; }
-        .status-erro { color: #f44336; }
+        .status-sucesso { color: #2e7d32; }
+        .status-erro { color: #c62828; }
 
         .chart-container { position: relative; height: 220px; width: 100%; margin-top: 10px; }
-        .progress-bar-bg { background-color: #2a2a2a; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
-        .progress-bar-fill { background-color: #4caf50; height: 100%; width: 0%; transition: width 0.5s ease; }
+        .progress-bar-bg { background-color: #e9ecef; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
+        .progress-bar-fill { background-color: #2e7d32; height: 100%; width: 0%; transition: width 0.5s ease; }
     </style>
 </head>
 <body>
 
-    <!-- CABEÇALHO SUPERIOR COM BOTÃO DE ATUALIZAR -->
+    <!-- CABEÇALHO SUPERIOR COM ÍCONE LOCATION_HYBRID -->
     <div class="header">
-        <h1>🏢 Controle Híbrido</h1>
-        <button class="btn-refresh" onclick="carregarDados(true)">🔄 Atualizar</button>
+        <img src="/static/elementos/location_hybrid.png" alt="Ícone Híbrido">
+        <h1>Controle Híbrido</h1>
     </div>
+
+    <!-- INDICADOR VISUAL DO GESTO PULL-TO-REFRESH -->
+    <div id="pullIndicator">🔄 Puxe para atualizar dados...</div>
 
     <div class="container">
         
         <!-- 🏠 ABA 1: DASHBOARD -->
         <div id="tabDashboard" class="tab-content active">
-            <div class="fi fi-rr-home"></div>
+            <div class="card">
                 <h3>📊 Meta de Frequência do Mês</h3>
-                <p id="totalPresencial" style="font-size: 22px; color: #4caf50; font-weight: bold; margin-bottom: 4px;">0 / 0 Dias Presenciais</p>
-                <p id="pctPresencial" style="color: #aaa; font-size: 13px;">Calculando meta do mês...</p>
+                <p id="totalPresencial" style="font-size: 22px; color: #2e7d32; font-weight: bold; margin-bottom: 4px;">0 / 0 Dias Presenciais</p>
+                <p id="pctPresencial" style="color: #6c757d; font-size: 13px;">Calculando meta do mês...</p>
                 <div class="progress-bar-bg">
                     <div id="progressBarFill" class="progress-bar-fill"></div>
                 </div>
@@ -103,7 +220,7 @@
 
             <div class="card">
                 <h3>📌 Métricas Detalhadas do Mês</h3>
-                <div id="detalhesMétricas" style="font-size: 13px; line-height: 1.8; color: #ccc;">
+                <div id="detalhesMétricas" style="font-size: 13px; line-height: 1.8; color: #495057;">
                     Carregando métricas...
                 </div>
             </div>
@@ -151,7 +268,7 @@
             </div>
         </div>
 
-        <!-- 📜 ABA 4: HISTÓRICO COM EXPORTAÇÃO CSV -->
+        <!-- 📜 ABA 4: HISTÓRICO COM BOTÃO DE EXPORTAR CSV -->
         <div id="tabHistorico" class="tab-content">
             <div class="card">
                 <h3>
@@ -169,12 +286,24 @@
         <img id="imgExpanded" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- BARRA DE NAVEGAÇÃO -->
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR COM OS ÍCONES PERSONALIZADOS DA PASTA ELEMENTOS -->
     <div class="nav-bar">
-        <button class="nav-item active" onclick="mudarAba('tabDashboard', this)"><span>🏠</span>Dashboard</button>
-        <button class="nav-item" onclick="mudarAba('tabNovo', this)"><span>➕</span>Novo</button>
-        <button class="nav-item" onclick="mudarAba('tabCalendario', this)"><span>📅</span>Calendário</button>
-        <button class="nav-item" onclick="mudarAba('tabHistorico', this)"><span>📜</span>Histórico</button>
+        <button class="nav-item active" onclick="mudarAba('tabDashboard', this)">
+            <img src="/static/elementos/home.png" alt="Dashboard">
+            Dashboard
+        </button>
+        <button class="nav-item" onclick="mudarAba('tabNovo', this)">
+            <img src="/static/elementos/add.png" alt="Novo">
+            Novo
+        </button>
+        <button class="nav-item" onclick="mudarAba('tabCalendario', this)">
+            <img src="/static/elementos/calendar.png" alt="Calendário">
+            Calendário
+        </button>
+        <button class="nav-item" onclick="mudarAba('tabHistorico', this)">
+            <img src="/static/elementos/history.png" alt="Histórico">
+            Histórico
+        </button>
     </div>
 
     <!-- BIBLIOTECAS EXTERNAS -->
@@ -227,7 +356,6 @@
             return dataISO;
         }
 
-        // CARREGA E ATUALIZA DADOS DO SUPABASE COM FEEDBACK VISUAL
         async function carregarDados(notificar = false) {
             try {
                 const res = await fetch(`${API_URL}/registros`);
@@ -236,10 +364,10 @@
                 renderizarHistorico();
 
                 if (notificar) {
-                    alert("✅ Dados atualizados com sucesso do Supabase!");
+                    alert("✅ Dados atualizados com sucesso!");
                 }
             } catch (err) {
-                document.getElementById("listaHistorico").innerHTML = "<p style='color:#f44336;'>Erro ao carregar dados do Supabase.</p>";
+                document.getElementById("listaHistorico").innerHTML = "<p style='color:#c62828;'>Erro ao carregar dados do Supabase.</p>";
             }
         }
 
@@ -277,7 +405,7 @@
                         data: [homeOffice, folgas, fds, presenciais],
                         backgroundColor: ['#2196f3', '#ff9800', '#9c27b0', '#4caf50'],
                         borderWidth: 2,
-                        borderColor: '#1e1e1e'
+                        borderColor: '#ffffff'
                     }]
                 },
                 options: {
@@ -286,7 +414,7 @@
                     plugins: {
                         legend: {
                             position: 'right',
-                            labels: { color: '#ffffff', font: { size: 12 } }
+                            labels: { color: '#212529', font: { size: 12 } }
                         }
                     }
                 }
@@ -296,7 +424,7 @@
         function renderizarHistorico() {
             const container = document.getElementById('listaHistorico');
             if (!registrosGlobais || registrosGlobais.length === 0) {
-                container.innerHTML = "<p style='color:#888; font-size:13px; text-align:center;'>Nenhum ponto registrado ainda.</p>";
+                container.innerHTML = "<p style='color:#6c757d; font-size:13px; text-align:center;'>Nenhum ponto registrado ainda.</p>";
                 return;
             }
 
@@ -304,8 +432,8 @@
                 <div class="hist-item">
                     <div>
                         <strong>#${r.id} - ${r.tipo}</strong><br>
-                        <small style="color:#aaa;">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small><br>
-                        <small style="color:#888;">🏢 ${r.empresa || 'Vivo'}${r.observacao ? ' - ' + r.observacao : ''}</small>
+                        <small style="color:#6c757d;">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small><br>
+                        <small style="color:#495057;">🏢 ${r.empresa || 'Vivo'}${r.observacao ? ' - ' + r.observacao : ''}</small>
                     </div>
                     ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img" onclick="expandirImagem('${r.foto_url}')" title="Clique para ampliar">` : ''}
                 </div>
@@ -431,6 +559,53 @@
                 btn.disabled = false;
                 btn.innerText = "📍 Salvar Ponto Agora";
             }
+        });
+
+        // -------------------------------------------------------------
+        // LÓGICA DE PULL-TO-REFRESH (PUXAR PARA BAIXO PARA ATUALIZAR)
+        // -------------------------------------------------------------
+        let startY = 0;
+        let currentY = 0;
+        let isPulling = false;
+        const pullIndicator = document.getElementById('pullIndicator');
+
+        window.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].clientY;
+                isPulling = true;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isPulling) return;
+            currentY = e.touches[0].clientY;
+            const distance = currentY - startY;
+
+            if (distance > 0 && window.scrollY === 0) {
+                const pullHeight = Math.min(distance * 0.4, 50);
+                pullIndicator.style.height = `${pullHeight}px`;
+                pullIndicator.style.opacity = `${pullHeight / 50}`;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+            if (!isPulling) return;
+            const distance = currentY - startY;
+
+            if (distance > 100 && window.scrollY === 0) {
+                pullIndicator.innerText = "⚡ Atualizando...";
+                carregarDados().then(() => {
+                    setTimeout(() => {
+                        pullIndicator.style.height = "0px";
+                        pullIndicator.style.opacity = "0";
+                        pullIndicator.innerText = "🔄 Puxe para atualizar dados...";
+                    }, 500);
+                });
+            } else {
+                pullIndicator.style.height = "0px";
+                pullIndicator.style.opacity = "0";
+            }
+            isPulling = false;
         });
 
         carregarDados();
