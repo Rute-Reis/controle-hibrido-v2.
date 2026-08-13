@@ -11,24 +11,23 @@ app = FastAPI(title="Meu Controle Híbrido v2")
 # Servir arquivos estáticos (HTML, CSS, JS, Imagens)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Conexão com o Supabase usando Variáveis de Ambiente
+# Conexão com o Supabase
 SUPABASE_URL = os.getenv("SUPABASE_URL", "https://awcfurzssrtvjuwqfebp.supabase.co")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "sb_publishable_hFUNm34QcB80l3SgQ_jfKQ_hyPjAKMY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Fuso Horário de Brasília
 BR_TZ = pytz.timezone('America/Sao_Paulo')
 
 
 @app.get("/")
 def home():
-    """Servir a página principal da aplicação (index.html)"""
+    """Servir a página principal da aplicação"""
     return FileResponse("static/index.html")
 
 
 @app.get("/api/registros")
 def listar_registros():
-    """Busca todos os pontos salvos na tabela do Supabase ordenados por id"""
+    """Busca todos os pontos salvos na tabela do Supabase"""
     try:
         response = supabase.table("registros").select("*").order("id", desc=True).execute()
         return response.data
@@ -46,17 +45,12 @@ async def registrar_ponto(
     longitude: float = Form(None),
     foto: UploadFile = File(None)
 ):
-    """
-    Recebe o formulário de ponto, faz upload da foto para o Supabase Storage 
-    e grava as informações de data, hora, tipo, empresa e coordenadas GPS.
-    """
+    """Grava um novo ponto no Supabase"""
     agora_br = datetime.now(BR_TZ)
     data_registro = data_manual if data_manual else agora_br.strftime("%Y-%m-%d")
     hora_registro = agora_br.strftime("%H:%M:%S")
-
     foto_url = None
 
-    # Upload da foto para o Bucket 'comprovantes' no Supabase
     if foto and foto.filename:
         try:
             timestamp = int(agora_br.timestamp())
@@ -74,7 +68,6 @@ async def registrar_ponto(
         except Exception as e:
             print(f"Aviso: Erro no upload da imagem: {str(e)}")
 
-    # Inserção dos dados no banco do Supabase incluindo Latitude e Longitude
     dados_ponto = {
         "data": data_registro,
         "hora": hora_registro,
@@ -91,3 +84,26 @@ async def registrar_ponto(
         return {"sucesso": True, "mensagem": "Ponto registrado com sucesso!", "dados": res.data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao salvar registro: {str(e)}")
+
+
+# ROTA PARA EXCLUIR UM PONTO REGISTRADO (DELETE)
+@app.delete("/api/registros/{id_registro}")
+def deletar_ponto(id_registro: int):
+    """Remove permanentemente um ponto pelo seu ID"""
+    try:
+        supabase.table("registros").delete().eq("id", id_registro).execute()
+        return {"sucesso": True, "mensagem": f"Registro #{id_registro} removido com sucesso!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao excluir registro: {str(e)}")
+
+
+# ROTA PARA ATUALIZAR TIPO OU OBSERVAÇÃO DE UM PONTO (UPDATE)
+@app.put("/api/registros/{id_registro}")
+def atualizar_ponto(id_registro: int, tipo: str = Form(...), observacao: str = Form("")):
+    """Atualiza o tipo e a observação de um registro existente"""
+    try:
+        dados_atualizados = {"tipo": tipo, "observacao": observacao}
+        supabase.table("registros").update(dados_atualizados).eq("id", id_registro).execute()
+        return {"sucesso": True, "mensagem": f"Registro #{id_registro} atualizado!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar registro: {str(e)}")

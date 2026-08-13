@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
-        /* VARIÁVEIS DE CORES PARA MODO CLARO (PADRÃO) */
         :root {
             --bg-body: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
             --bg-card: #ffffff;
@@ -28,7 +27,6 @@
             --border-card: #e9ecef;
             --shadow-card: rgba(0, 0, 0, 0.05);
 
-            /* CORES VIVAS DA JORNADA */
             --color-presencial: #2e7d32;
             --bg-presencial: #e8f5e9;
             --color-homeoffice: #0288d1;
@@ -39,7 +37,6 @@
             --bg-fds: #f3e5f5;
         }
 
-        /* VARIÁVEIS DE CORES PARA MODO ESCURO */
         body.dark-mode {
             --bg-body: #121212;
             --bg-card: #1e1e1e;
@@ -74,7 +71,6 @@
             transition: background 0.3s, color 0.3s;
         }
         
-        /* CABEÇALHO AJUSTADO (SEM ESPREMER O TÍTULO) */
         .header { 
             text-align: center; 
             padding: 16px 18px; 
@@ -85,16 +81,10 @@
             align-items: center; 
             box-shadow: 0 2px 10px var(--shadow-card);
         }
-        .header-title { 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            white-space: nowrap; /* GARANTE QUE O TÍTULO NÃO QUEBRE DE LINHA */
-        }
+        .header-title { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .header i { font-size: 22px; color: #4dabf7; }
         .header h1 { font-size: 18px; color: var(--text-main); font-weight: 700; white-space: nowrap; }
 
-        /* BOTÃO COMPACTO AJUSTADO */
         .btn-theme-toggle {
             background: var(--bg-input);
             border: 1px solid var(--border-color);
@@ -107,24 +97,9 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            width: auto !important; /* FORÇA LARGURA COMPACTA */
-            flex-shrink: 0; /* IMPEDE O BOTÃO DE ESTICAR E EMPURRAR O TÍTULO */
+            width: auto !important;
+            flex-shrink: 0;
             transition: all 0.2s;
-        }
-
-        #pullIndicator {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            height: 0;
-            overflow: hidden;
-            transition: height 0.2s ease, opacity 0.2s ease;
-            opacity: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-input);
-            font-weight: 600;
         }
 
         .container { padding: 15px; }
@@ -206,7 +181,6 @@
             cursor: pointer; 
             padding: 0; 
             width: auto; 
-            box-shadow: none;
         }
         .nav-item.active { color: #4dabf7; font-weight: bold; }
         .nav-item i { font-size: 20px; margin-bottom: 2px; }
@@ -233,12 +207,61 @@
             margin-bottom: 12px;
             border: 1px solid var(--border-card);
             overflow: hidden;
-            cursor: pointer;
             box-shadow: 0 2px 8px var(--shadow-card);
         }
-        .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .hist-details { display: none; padding: 12px 14px 14px 14px; border-top: 1px dashed var(--border-color); background-color: var(--bg-input); }
         .hist-details.active { display: block; animation: fadeIn 0.25s ease-in-out; }
+
+        /* BOTOES DE AÇÃO NO HISTÓRICO (EDITAR E DELETAR) */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .btn-action-delete {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: auto;
+        }
+        .btn-action-edit {
+            background-color: #0d3b66;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: auto;
+        }
+
+        /* MODAL PARA VISUALIZAR FOTO EM TELA CHEIA */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.9); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 2000; 
+            padding: 20px;
+        }
+        .modal img { 
+            max-width: 95%; 
+            max-height: 85%; 
+            border-radius: 12px; 
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-4px); }
@@ -246,7 +269,7 @@
         }
 
         .map-hist { height: 150px; width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid var(--border-color); }
-        .thumb-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); }
+        .thumb-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); cursor: pointer; }
         #mapaLocal { height: 180px; width: 100%; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--border-color); z-index: 1; }
 
         .status-msg { text-align: center; font-size: 13px; margin-top: 10px; font-weight: 500; }
@@ -270,8 +293,6 @@
             <span id="lblTheme">Escuro</span>
         </button>
     </div>
-
-    <div id="pullIndicator">🔄 Puxe para atualizar dados...</div>
 
     <div class="container">
         
@@ -353,11 +374,16 @@
                     <span>📜 Histórico Completo</span>
                     <button class="btn-export" onclick="exportarCSV()">📥 Baixar CSV</button>
                 </h3>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">💡 Clique em qualquer registro para ver o mapa e detalhes.</p>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">💡 Clique em qualquer registro para ver detalhes, apagar ou editar.</p>
                 <div id="listaHistorico">Carregando histórico...</div>
             </div>
         </div>
 
+    </div>
+
+    <!-- MODAL PARA AMPLIAR A FOTO EM TELA CHEIA -->
+    <div id="imgModal" class="modal" onclick="fecharModal()">
+        <img id="imgExpanded" src="" alt="Foto Ampliada">
     </div>
 
     <!-- NAVEGAÇÃO INFERIOR -->
@@ -494,7 +520,7 @@
                 🏢 <strong>Presenciais Realizados:</strong> ${presenciais} / ${metaPresencialExigida} dias<br>
                 🏠 <strong>Home Office Realizados:</strong> ${homeOffice} dia(s)<br>
                 🏖️ <strong>Folga / Feriado:</strong> ${folgas} dia(s)<br>
-                📅 <strong>Finais de Semana no Mês:</strong> Calculo automático no calendário<br>
+                📅 <strong>Finais de Semana no Mês:</strong> Calculados automaticamente no calendário<br>
                 📊 <strong>Total de Dias Úteis no Mês:</strong> ${diasUteisDoMes} dias
             `;
 
@@ -513,7 +539,6 @@
                         backgroundColor: ['#0288d1', '#ed6c02', '#9c27b0', '#2e7d32'],
                         borderWidth: 2,
                         borderColor: isDark ? '#1e1e1e' : '#ffffff',
-                        // ELEVAÇÃO VISUAL DA FATIA DA ROSCA AO CLICAR/INTERAGIR
                         hoverOffset: 15
                     }]
                 },
@@ -572,14 +597,14 @@
             container.innerHTML = registrosGlobais.map(r => {
                 const tipoClasse = (r.tipo || 'Presencial').replace(/\s+/g, '');
                 return `
-                    <div class="hist-item-card" onclick="alternarDetalhesCard(${r.id}, ${r.latitude || -23.55052}, ${r.longitude || -46.633308})">
-                        <div class="hist-header-content">
+                    <div class="hist-item-card">
+                        <div class="hist-header-content" onclick="alternarDetalhesCard(${r.id}, ${r.latitude || -23.55052}, ${r.longitude || -46.633308})">
                             <div>
                                 <span class="badge-tipo badge-${tipoClasse}">${r.tipo}</span><br>
                                 <strong>#${r.id} - ${r.empresa || 'Vivo'}</strong><br>
                                 <small style="color:var(--text-muted);">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small>
                             </div>
-                            ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img">` : '<i class="bi bi-chevron-down" style="color:var(--text-muted); font-size:18px;"></i>'}
+                            ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img" onclick="event.stopPropagation(); expandirImagem('${r.foto_url}')" title="Clique para ampliar">` : '<i class="bi bi-chevron-down" style="color:var(--text-muted); font-size:18px;"></i>'}
                         </div>
 
                         <div id="card-detail-${r.id}" class="hist-details">
@@ -587,6 +612,12 @@
                                 <strong>📝 Observação:</strong> ${r.observacao || 'Nenhuma observação informada.'}
                             </p>
                             <div id="map-hist-${r.id}" class="map-hist"></div>
+                            
+                            <!-- BOTOES DE AÇÃO: DELETAR E EDITAR -->
+                            <div class="card-actions">
+                                <button class="btn-action-edit" onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.observacao || ''}')">✏️ Editar Tipo</button>
+                                <button class="btn-action-delete" onclick="apagarRegistro(${r.id})">🗑️ Apagar Ponto</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -612,6 +643,59 @@
                     }
                 }, 100);
             }
+        }
+
+        // FUNÇÃO PARA APAGAR UM PONTO DUPLICADO NO SUPABASE
+        async function apagarRegistro(id) {
+            if (confirm(`Tem certeza que deseja apagar o registro #${id}? Esta ação não pode ser desfeita.`)) {
+                try {
+                    const res = await fetch(`${API_URL}/registros/${id}`, { method: 'DELETE' });
+                    const data = await res.json();
+                    if (data.sucesso) {
+                        alert("✅ Registro removido com sucesso!");
+                        await carregarDados();
+                    } else {
+                        alert("❌ Erro ao apagar o registro.");
+                    }
+                } catch (err) {
+                    alert("❌ Erro ao comunicar com a API.");
+                }
+            }
+        }
+
+        // FUNÇÃO PARA EDITAR O TIPO E OBSERVAÇÃO DE UM PONTO
+        async function editarRegistro(id, tipoAtual, obsAtual) {
+            const novoTipo = prompt("Selecione o novo tipo de jornada (Presencial, Home Office, Folga / Feriado, Final de Semana):", tipoAtual);
+            if (!novoTipo) return;
+
+            const novaObs = prompt("Digite a nova observação:", obsAtual);
+
+            const formData = new FormData();
+            formData.append('tipo', novoTipo);
+            formData.append('observacao', novaObs || "");
+
+            try {
+                const res = await fetch(`${API_URL}/registros/${id}`, { method: 'PUT', body: formData });
+                const data = await res.json();
+                if (data.sucesso) {
+                    alert("✅ Registro atualizado com sucesso!");
+                    await carregarDados();
+                } else {
+                    alert("❌ Erro ao atualizar registro.");
+                }
+            } catch (err) {
+                alert("❌ Erro ao comunicar com a API.");
+            }
+        }
+
+        // EXPANDIR FOTO EM TELA CHEIA COM MODAL
+        function expandirImagem(url) {
+            document.getElementById('imgExpanded').src = url;
+            document.getElementById('imgModal').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('imgModal').style.display = 'none';
         }
 
         function exportarCSV() {
