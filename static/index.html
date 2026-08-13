@@ -16,13 +16,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
+        /* VARIÁVEIS DE CORES PARA MODO CLARO (PADRÃO) */
         :root {
             --bg-body: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
             --bg-card: #ffffff;
             --bg-header: #ffffff;
             --bg-input: #f8f9fa;
             --text-main: #212529;
-            --text-muted: #6c757d;
+            --text-muted: #8c959f;
             --border-color: #dee2e6;
             --border-card: #e9ecef;
             --shadow-card: rgba(0, 0, 0, 0.05);
@@ -35,15 +36,18 @@
             --bg-folga: #fff3e0;
             --color-fds: #9c27b0;
             --bg-fds: #f3e5f5;
+            
+            --nav-active: #0d3b66;
         }
 
+        /* VARIÁVEIS DE CORES PARA MODO ESCURO */
         body.dark-mode {
             --bg-body: #121212;
             --bg-card: #1e1e1e;
             --bg-header: #1e1e1e;
             --bg-input: #2a2a2a;
             --text-main: #ffffff;
-            --text-muted: #aaa;
+            --text-muted: #aaaaaa;
             --border-color: #2a2a2a;
             --border-card: #2a2a2a;
             --shadow-card: rgba(0, 0, 0, 0.4);
@@ -56,6 +60,8 @@
             --color-folga: #ffb74d;
             --bg-fds: #3b1348;
             --color-fds: #ba68c8;
+            
+            --nav-active: #4dabf7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -63,7 +69,7 @@
         body { 
             background: var(--bg-body); 
             color: var(--text-main); 
-            padding-bottom: 95px; 
+            padding-bottom: 90px; 
             max-width: 500px; 
             margin: 0 auto; 
             min-height: 100vh;
@@ -103,8 +109,23 @@
         }
 
         .container { padding: 15px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        
+        /* TRANSIÇÃO SUAVE DE FLUIDEZ ENTRE AS ABAS */
+        .tab-content { 
+            display: none; 
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+        }
+        .tab-content.active { 
+            display: block; 
+            opacity: 1;
+            animation: slideUp 0.25s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .card { 
             background-color: var(--bg-card); 
@@ -155,6 +176,9 @@
 
         .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; color: white; border: none; cursor: pointer; }
 
+        /* ----------------------------------------------------------------- */
+        /* DESIGN FLUIDO E PADRONIZADO DA BARRA DE NAVEGAÇÃO INFERIOR        */
+        /* ----------------------------------------------------------------- */
         .nav-bar { 
             position: fixed; 
             bottom: 0; 
@@ -164,26 +188,56 @@
             margin: 0 auto; 
             background-color: var(--bg-card); 
             display: flex; 
-            justify-content: space-around; 
-            padding: 10px 0 24px 0; 
+            justify-content: space-between; 
+            align-items: center;
+            height: 68px;
+            padding: 0 10px 14px 10px; 
             border-top: 1px solid var(--border-color); 
             z-index: 100; 
             box-shadow: 0 -4px 20px var(--shadow-card); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
+        
         .nav-item { 
-            background: none; 
-            border: none; 
+            background: none !important; 
+            border: none !important; 
             color: var(--text-muted); 
             font-size: 11px; 
+            font-weight: 500;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
+            justify-content: center;
             cursor: pointer; 
-            padding: 0; 
-            width: auto; 
+            padding: 6px 0; 
+            flex: 1; /* CADA ABA OCUPA EXATAMENTE 25% DA LARGURA DA BARRA */
+            height: 100%;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            transition: color 0.2s ease, transform 0.1s ease;
         }
-        .nav-item.active { color: #4dabf7; font-weight: bold; }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+
+        .nav-item i { 
+            font-size: 21px; 
+            margin-bottom: 3px; 
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        /* DESTAQUE ELEGANTE DA ABA ATIVA (SEM BORDAS OU CARTÕES FLUTUANTES) */
+        .nav-item.active { 
+            color: var(--nav-active) !important; 
+            font-weight: 700; 
+        }
+
+        .nav-item.active i { 
+            transform: translateY(-2px); 
+            color: var(--nav-active) !important; 
+        }
 
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
         .cal-head { font-size: 11px; color: var(--text-muted); font-weight: bold; padding-bottom: 4px; }
@@ -207,42 +261,17 @@
             margin-bottom: 12px;
             border: 1px solid var(--border-card);
             overflow: hidden;
+            cursor: pointer;
             box-shadow: 0 2px 8px var(--shadow-card);
         }
-        .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; }
         .hist-details { display: none; padding: 12px 14px 14px 14px; border-top: 1px dashed var(--border-color); background-color: var(--bg-input); }
         .hist-details.active { display: block; animation: fadeIn 0.25s ease-in-out; }
 
-        /* BOTOES DE AÇÃO NO HISTÓRICO (EDITAR E DELETAR) */
-        .card-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .btn-action-delete {
-            background-color: #dc3545;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: none;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            width: auto;
-        }
-        .btn-action-edit {
-            background-color: #0d3b66;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: none;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            width: auto;
-        }
+        .card-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .btn-action-delete { background-color: #dc3545; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; width: auto; }
+        .btn-action-edit { background-color: #0d3b66; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; width: auto; }
 
-        /* MODAL PARA VISUALIZAR FOTO EM TELA CHEIA */
         .modal { 
             display: none; 
             position: fixed; 
@@ -256,12 +285,7 @@
             z-index: 2000; 
             padding: 20px;
         }
-        .modal img { 
-            max-width: 95%; 
-            max-height: 85%; 
-            border-radius: 12px; 
-            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
-        }
+        .modal img { max-width: 95%; max-height: 85%; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-4px); }
@@ -386,7 +410,7 @@
         <img id="imgExpanded" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- NAVEGAÇÃO INFERIOR -->
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR UNIFORME E FLUIDA -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="mudarAba('tabDashboard', this)">
             <i class="bi bi-house-door-fill"></i>
@@ -472,7 +496,9 @@
         function mudarAba(abaId, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(abaId).classList.add('active');
+            
+            const abaAlvo = document.getElementById(abaId);
+            abaAlvo.classList.add('active');
             if (btn) btn.classList.add('active');
             
             if (abaId === 'tabDashboard') renderizarDashboard();
@@ -613,7 +639,6 @@
                             </p>
                             <div id="map-hist-${r.id}" class="map-hist"></div>
                             
-                            <!-- BOTOES DE AÇÃO: DELETAR E EDITAR -->
                             <div class="card-actions">
                                 <button class="btn-action-edit" onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.observacao || ''}')">✏️ Editar Tipo</button>
                                 <button class="btn-action-delete" onclick="apagarRegistro(${r.id})">🗑️ Apagar Ponto</button>
@@ -645,7 +670,6 @@
             }
         }
 
-        // FUNÇÃO PARA APAGAR UM PONTO DUPLICADO NO SUPABASE
         async function apagarRegistro(id) {
             if (confirm(`Tem certeza que deseja apagar o registro #${id}? Esta ação não pode ser desfeita.`)) {
                 try {
@@ -663,7 +687,6 @@
             }
         }
 
-        // FUNÇÃO PARA EDITAR O TIPO E OBSERVAÇÃO DE UM PONTO
         async function editarRegistro(id, tipoAtual, obsAtual) {
             const novoTipo = prompt("Selecione o novo tipo de jornada (Presencial, Home Office, Folga / Feriado, Final de Semana):", tipoAtual);
             if (!novoTipo) return;
@@ -688,7 +711,6 @@
             }
         }
 
-        // EXPANDIR FOTO EM TELA CHEIA COM MODAL
         function expandirImagem(url) {
             document.getElementById('imgExpanded').src = url;
             document.getElementById('imgModal').style.display = 'flex';
