@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
-        /* VARIÁVEIS DE CORES PARA MODO CLARO (PADRÃO) */
         :root {
             --bg-body: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
             --bg-card: #ffffff;
@@ -40,7 +39,6 @@
             --nav-active: #0d3b66;
         }
 
-        /* VARIÁVEIS DE CORES PARA MODO ESCURO */
         body.dark-mode {
             --bg-body: #121212;
             --bg-card: #1e1e1e;
@@ -110,7 +108,6 @@
 
         .container { padding: 15px; }
         
-        /* TRANSIÇÃO SUAVE DE FLUIDEZ ENTRE AS ABAS */
         .tab-content { 
             display: none; 
             opacity: 0;
@@ -176,9 +173,6 @@
 
         .btn-export { width: auto; padding: 6px 12px; font-size: 12px; background: #0d3b66; border-radius: 8px; color: white; border: none; cursor: pointer; }
 
-        /* ----------------------------------------------------------------- */
-        /* DESIGN FLUIDO E PADRONIZADO DA BARRA DE NAVEGAÇÃO INFERIOR        */
-        /* ----------------------------------------------------------------- */
         .nav-bar { 
             position: fixed; 
             bottom: 0; 
@@ -211,7 +205,7 @@
             justify-content: center;
             cursor: pointer; 
             padding: 6px 0; 
-            flex: 1; /* CADA ABA OCUPA EXATAMENTE 25% DA LARGURA DA BARRA */
+            flex: 1; 
             height: 100%;
             border-radius: 0 !important;
             box-shadow: none !important;
@@ -224,11 +218,8 @@
             transition: transform 0.2s ease, color 0.2s ease;
         }
 
-        .nav-item:active {
-            transform: scale(0.95);
-        }
+        .nav-item:active { transform: scale(0.95); }
 
-        /* DESTAQUE ELEGANTE DA ABA ATIVA (SEM BORDAS OU CARTÕES FLUTUANTES) */
         .nav-item.active { 
             color: var(--nav-active) !important; 
             font-weight: 700; 
@@ -261,16 +252,47 @@
             margin-bottom: 12px;
             border: 1px solid var(--border-card);
             overflow: hidden;
-            cursor: pointer;
             box-shadow: 0 2px 8px var(--shadow-card);
         }
-        .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .hist-details { display: none; padding: 12px 14px 14px 14px; border-top: 1px dashed var(--border-color); background-color: var(--bg-input); }
         .hist-details.active { display: block; animation: fadeIn 0.25s ease-in-out; }
 
         .card-actions { display: flex; gap: 8px; margin-top: 12px; }
         .btn-action-delete { background-color: #dc3545; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; width: auto; }
         .btn-action-edit { background-color: #0d3b66; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; width: auto; }
+
+        /* MODAL POP-UP DE LEMBRETE DE PONTO */
+        .reminder-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+        .reminder-box {
+            background: var(--bg-card);
+            padding: 24px 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            border: 1px solid var(--border-card);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+        .reminder-icon {
+            font-size: 42px;
+            color: #0288d1;
+            margin-bottom: 10px;
+        }
 
         .modal { 
             display: none; 
@@ -405,12 +427,25 @@
 
     </div>
 
+    <!-- MODAL DE LEMBRETE POP-UP DE PONTO -->
+    <div id="reminderModal" class="reminder-modal">
+        <div class="reminder-box">
+            <i class="bi bi-alarm-fill reminder-icon"></i>
+            <h3 style="font-size:18px; margin-bottom:8px;">Lembrete de Ponto</h3>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">
+                Você ainda não registrou a sua jornada de trabalho de hoje.
+            </p>
+            <button onclick="irParaRegistroPonto()" style="margin-bottom:8px;">📍 Registrar Agora</button>
+            <button onclick="fecharLembrete()" style="background:transparent; color:var(--text-muted); box-shadow:none; padding:8px;">Lembrar mais tarde</button>
+        </div>
+    </div>
+
     <!-- MODAL PARA AMPLIAR A FOTO EM TELA CHEIA -->
     <div id="imgModal" class="modal" onclick="fecharModal()">
         <img id="imgExpanded" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- BARRA DE NAVEGAÇÃO INFERIOR UNIFORME E FLUIDA -->
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="mudarAba('tabDashboard', this)">
             <i class="bi bi-house-door-fill"></i>
@@ -448,6 +483,48 @@
             11: 6, 12: 7, 13: 7, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10,
             19: 11, 20: 12, 21: 12, 22: 13, 23: 13, 24: 14
         };
+
+        // VERIFICA SE HOJE É DIA ÚTIL E SE O USUÁRIO AINDA NÃO BATEU O PONTO
+        function verificarLembretePontoHoje() {
+            const agora = new Date();
+            const diaSemana = agora.getDay();
+            const ano = agora.getFullYear();
+            const mes = (agora.getMonth() + 1) < 10 ? '0' + (agora.getMonth() + 1) : (agora.getMonth() + 1);
+            const dia = agora.getDate() < 10 ? '0' + agora.getDate() : agora.getDate();
+            const dataHojeISO = `${ano}-${mes}-${dia}`;
+
+            // Só dispara lembrete em dias úteis (Segunda a Sexta)
+            if (diaSemana !== 0 && diaSemana !== 6) {
+                const pontoFeitoHoje = registrosGlobais.some(r => r.data === dataHojeISO);
+                const jaLembrouHoje = sessionStorage.getItem(`lembrete_${dataHojeISO}`);
+
+                if (!pontoFeitoHoje && !jaLembrouHoje) {
+                    setTimeout(() => {
+                        document.getElementById('reminderModal').style.display = 'flex';
+                    }, 1000);
+                }
+            }
+        }
+
+        function fecharLembrete() {
+            const agora = new Date();
+            const dataHojeISO = `${agora.getFullYear()}-${agora.getMonth() + 1}-${agora.getDate()}`;
+            sessionStorage.setItem(`lembrete_${dataHojeISO}`, 'true');
+            document.getElementById('reminderModal').style.display = 'none';
+        }
+
+        function irParaRegistroPonto() {
+            fecharLembrete();
+            const btnNovo = document.querySelectorAll('.nav-item')[1];
+            mudarAba('tabNovo', btnNovo);
+        }
+
+        // SOLICITA PERMISSÃO DE NOTIFICAÇÃO NATIVA DO NAVEGADOR
+        function pedirPermissaoNotificacoes() {
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        }
 
         function alternarTema() {
             const body = document.body;
@@ -519,6 +596,7 @@
                 registrosGlobais = await res.json();
                 renderizarDashboard();
                 renderizarHistorico();
+                verificarLembretePontoHoje();
 
                 if (notificar) alert("✅ Dados atualizados com sucesso!");
             } catch (err) {
@@ -811,6 +889,7 @@
 
         carregarTemaSalvo();
         carregarDados();
+        pedirPermissaoNotificacoes();
     </script>
 </body>
 </html>
