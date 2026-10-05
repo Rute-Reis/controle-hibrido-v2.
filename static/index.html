@@ -104,6 +104,12 @@
 
         #btnRefresh {
             padding: 6px 10px;
+            font-size: 14px;
+        }
+
+        #btnRefresh:hover {
+            background: var(--bg-body);
+            transform: scale(1.05);
         }
 
         #btnRefresh.spinning i {
@@ -362,20 +368,21 @@
 </head>
 <body>
 
-    <div class="header">
+        <div class="header">
         <div class="header-title">
             <i class="bi bi-geo-alt-fill"></i>
             <h1>Controle Híbrido</h1>
         </div>
-<div style="display: flex; gap: 8px; align-items: center;">
-    <button id="btnRefresh" class="btn-theme-toggle" onclick="atualizarDados()" title="Atualizar dados">
-        <i class="bi bi-arrow-clockwise"></i>
-    </button>
-    <button id="btnTheme" class="btn-theme-toggle" onclick="alternarTema()">
-        <i class="bi bi-moon-fill"></i>
-        <span id="lblTheme">Escuro</span>
-    </button>
-</div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <button id="btnRefresh" class="btn-theme-toggle" onclick="atualizarDados()" title="Atualizar dados">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <button id="btnTheme" class="btn-theme-toggle" onclick="alternarTema()">
+                <i class="bi bi-moon-fill"></i>
+                <span id="lblTheme">Escuro</span>
+            </button>
+        </div>
+    </div>
 
     <div class="container">
 
