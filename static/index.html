@@ -372,7 +372,7 @@
             <!-- SELETOR DE MÊS / ANO -->
             <div class="month-selector">
                 <button class="btn-month-nav" onclick="navegarMes(-1)">◀ Anterior</button>
-                <div class="month-title" id="displayMesAno">Setembro 2026</div>
+                <div class="month-title displayMesAno">Outubro 2026</div>
                 <button class="btn-month-nav" onclick="navegarMes(1)">Próximo ▶</button>
             </div>
 
@@ -439,6 +439,13 @@
 
         <!-- 📅 ABA 3: CALENDÁRIO -->
         <div id="tabCalendario" class="tab-content">
+            <!-- SELETOR DE MÊS TAMBÉM NO CALENDÁRIO -->
+            <div class="month-selector">
+                <button class="btn-month-nav" onclick="navegarMes(-1)">◀ Anterior</button>
+                <div class="month-title displayMesAno">Outubro 2026</div>
+                <button class="btn-month-nav" onclick="navegarMes(1)">Próximo ▶</button>
+            </div>
+
             <div class="card">
                 <h3>📅 Calendário do Mês (Clique para registrar)</h3>
                 <div class="cal-grid" id="gridCalendario"></div>
@@ -513,26 +520,13 @@
         // DATA ATUAL DE VISUALIZAÇÃO DO MÊS
         let dataVisualizada = new Date();
 
-        // -------------------------------------------------------------
         // MAPEAMENTO OFICIAL DE FERIADOS NACIONAIS E ESTADUAIS (SP)
-        // -------------------------------------------------------------
         const FERIADOS_OFICIAIS = [
             // 2026
-            "2026-01-01", // Confraternização Universal
-            "2026-01-25", // Aniv. SP
-            "2026-02-16", // Carnaval
-            "2026-02-17", // Carnaval
-            "2026-04-03", // Sexta-feira Santa
-            "2026-04-21", // Tiradentes
-            "2026-05-01", // Dia do Trabalhador
-            "2026-06-04", // Corpus Christi
-            "2026-07-09", // Revolução Constitucionalista (SP)
-            "2026-09-07", // Independência do Brasil (7 de Setembro)
-            "2026-10-12", // Nossa Senhora Aparecida
-            "2026-11-02", // Finados
-            "2026-11-15", // Proclamação da República
-            "2026-11-20", // Consciência Negra
-            "2026-12-25", // Natal
+            "2026-01-01", "2026-01-25", "2026-02-16", "2026-02-17",
+            "2026-04-03", "2026-04-21", "2026-05-01", "2026-06-04",
+            "2026-07-09", "2026-09-07", "2026-10-12", "2026-11-02",
+            "2026-11-15", "2026-11-20", "2026-12-25",
             // 2027
             "2027-01-01", "2027-02-08", "2027-02-09", "2027-03-26",
             "2027-04-21", "2027-05-01", "2027-05-27", "2027-07-09",
@@ -555,6 +549,17 @@
             dataVisualizada.setMonth(dataVisualizada.getMonth() + direcao);
             renderizarDashboard();
             renderizarCalendario();
+        }
+
+        // NORMALIZA QUALQUER DATA (STRING ISO OU BR) PARA FORMATO "YYYY-MM-DD"
+        function normalizarDataISO(dataStr) {
+            if (!dataStr) return "";
+            if (dataStr.includes("T")) dataStr = dataStr.split("T")[0];
+            if (dataStr.includes("/")) {
+                const p = dataStr.split("/");
+                if (p.length === 3) return `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
+            }
+            return dataStr;
         }
 
         // CÁLCULO PRECISO DE DIAS ÚTEIS (DESCONTANDO SÁBADOS, DOMINGOS E FERIADOS)
@@ -594,7 +599,7 @@
             const dataHojeISO = `${ano}-${mes}-${dia}`;
 
             if (diaSemana !== 0 && diaSemana !== 6 && !FERIADOS_OFICIAIS.includes(dataHojeISO)) {
-                const pontoFeitoHoje = registrosGlobais.some(r => r.data === dataHojeISO);
+                const pontoFeitoHoje = registrosGlobais.some(r => normalizarDataISO(r.data) === dataHojeISO);
                 const jaLembrouHoje = sessionStorage.getItem(`lembrete_${dataHojeISO}`);
 
                 if (!pontoFeitoHoje && !jaLembrouHoje) {
@@ -662,8 +667,9 @@
         }
 
         function formatarDataBR(dataISO) {
-            if (!dataISO) return "";
-            const partes = dataISO.split("-");
+            const dataNorm = normalizarDataISO(dataISO);
+            if (!dataNorm) return "";
+            const partes = dataNorm.split("-");
             if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
             return dataISO;
         }
@@ -673,6 +679,7 @@
                 const res = await fetch(`${API_URL}/registros`);
                 registrosGlobais = await res.json();
                 renderizarDashboard();
+                renderizarCalendario();
                 renderizarHistorico();
                 verificarLembretePontoHoje();
 
@@ -682,17 +689,22 @@
             }
         }
 
-        // RENDERIZAÇÃO DO DASHBOARD COM DIAS ÚTEIS E FERIADOS
+        // RENDERIZAÇÃO DO DASHBOARD COM NORMALIZAÇÃO DE DATAS
         function renderizarDashboard() {
             const ano = dataVisualizada.getFullYear();
             const mes = dataVisualizada.getMonth();
             const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
             const prefixoMesAno = `${ano}-${mesPad}`;
 
-            document.getElementById('displayMesAno').innerText = `${NOMES_MESES[mes]} ${ano}`;
+            document.querySelectorAll('.displayMesAno').forEach(el => {
+                el.innerText = `${NOMES_MESES[mes]} ${ano}`;
+            });
 
-            // FILTRA REGISTROS APENAS DO MÊS VISUALIZADO
-            const registrosDoMes = registrosGlobais.filter(r => r.data && r.data.startsWith(prefixoMesAno));
+            // FILTRA REGISTROS NORMALIZANDO A DATA
+            const registrosDoMes = registrosGlobais.filter(r => {
+                const dtNorm = normalizarDataISO(r.data);
+                return dtNorm && dtNorm.startsWith(prefixoMesAno);
+            });
 
             const presenciais = registrosDoMes.filter(r => r.tipo === 'Presencial').length;
             const homeOffice = registrosDoMes.filter(r => r.tipo === 'Home Office').length;
@@ -744,9 +756,11 @@
             });
         }
 
-        // CALENDÁRIO COM IDENTIFICAÇÃO AUTOMÁTICA DE FERIADOS
+        // CALENDÁRIO COM IDENTIFICAÇÃO AUTOMÁTICA E NORMALIZADA DE DATAS
         function renderizarCalendario() {
             const grid = document.getElementById('gridCalendario');
+            if (!grid) return;
+
             const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
             let html = diasSemana.map(d => `<div class="cal-head">${d}</div>`).join('');
 
@@ -763,7 +777,8 @@
                 const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
                 const dataStr = `${ano}-${mesPad}-${diaPad}`;
 
-                const reg = registrosGlobais.find(r => r.data === dataStr);
+                // BUSCA REGISTRO COM NORMALIZAÇÃO DE DATA
+                const reg = registrosGlobais.find(r => normalizarDataISO(r.data) === dataStr);
                 const diaSemanaObj = new Date(ano, mes, d).getDay();
                 const ehFinalDeSemana = (diaSemanaObj === 0 || diaSemanaObj === 6);
                 const ehFeriado = FERIADOS_OFICIAIS.includes(dataStr);
@@ -772,7 +787,6 @@
                 if (reg) {
                     tipoClasse = reg.tipo.replace(/\s+/g, '');
                 } else if (ehFeriado) {
-                    // IDENTIFICAÇÃO AUTOMÁTICA DE FERIADO NO CALENDÁRIO
                     tipoClasse = 'Folga';
                 } else if (ehFinalDeSemana) {
                     tipoClasse = 'FinalDeSemana';
