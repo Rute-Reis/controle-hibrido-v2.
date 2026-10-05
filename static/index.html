@@ -174,17 +174,18 @@
         }
 
         label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
-        select, input { 
-            width: 100%; 
-            padding: 12px; 
-            background-color: var(--bg-input); 
-            border: 1px solid var(--border-color); 
-            border-radius: 12px; 
-            color: var(--text-main); 
-            margin-bottom: 14px; 
-            font-size: 14px; 
-            outline: none; 
-            -webkit-appearance: none; 
+        select, input {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            margin-bottom: 14px;
+            font-size: 14px;
+            outline: none;
+            -webkit-appearance: none; /* Compatibilidade com Safari/Chrome antigo */
+            appearance: none;         /* Padrão moderno de CSS */
         }
 
         button { 
@@ -695,6 +696,7 @@
             const mes = dataVisualizada.getMonth();
             const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
             const prefixoMesAno = `${ano}-${mesPad}`;
+            console.log("Registros recebidos do banco:", registrosGlobais);
 
             document.querySelectorAll('.displayMesAno').forEach(el => {
                 el.innerText = `${NOMES_MESES[mes]} ${ano}`;
