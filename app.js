@@ -114,30 +114,40 @@ function renderizarDashboard() {
     const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
     const prefixoMesAno = `${ano}-${mesPad}`;
 
+    // Atualiza o título do mês
     document.querySelectorAll('.displayMesAno').forEach(el => {
         el.innerText = `${NOMES_MESES[mes]} ${ano}`;
     });
 
+    // Filtra os registros do mês atual
     const registrosDoMes = (registrosGlobais || []).filter(r => {
         const dtNorm = normalizarDataISO(r.data);
         return dtNorm && dtNorm.startsWith(prefixoMesAno);
     });
 
+    // Contagens
     const presenciais = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('presencial')).length;
     const homeOffice = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('home') || normalizarTexto(r.tipo).includes('office')).length;
     const folgas = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('folga') || normalizarTexto(r.tipo).includes('feriado')).length;
     const fdsRegistrados = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('final') || normalizarTexto(r.tipo).includes('fds')).length;
 
+    // Cálculos da Meta
     const { diasUteis, feriadosEmDiasUteis } = calcularDiasUteisMes(ano, mes);
     const metaPresencialExigida = REGRAS_PLANILHA_VIVO[diasUteis] || 12;
     const pctMetaExigida = diasUteis > 0 ? ((metaPresencialExigida / diasUteis) * 100).toFixed(2) : 0;
     const pctProgressoAtual = metaPresencialExigida > 0 ? Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1) : 0;
 
+    // --- ATUALIZAÇÃO DOS ELEMENTOS (COM VERIFICAÇÃO DE SEGURANÇA) ---
+    
     const elemTotalPresencial = document.getElementById('totalPresencial');
-    if (elemTotalPresencial) elemTotalPresencial.innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
+    if (elemTotalPresencial) {
+        elemTotalPresencial.innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
+    }
 
     const elemProgresso = document.getElementById('pctProgressoAtual');
-    if (elemProgresso) elemProgresso.innerText = `🎯 Progresso Atual: ${pctProgressoAtual}% da meta concluída`;
+    if (elemProgresso) {
+        elemProgresso.innerText = `🎯 Progresso Atual: ${pctProgressoAtual}% da meta concluída`;
+    }
 
     const elemDetalhesMeta = document.getElementById('pctPresencial');
     if (elemDetalhesMeta) {
@@ -145,18 +155,11 @@ function renderizarDashboard() {
     }
 
     const progressBarFill = document.getElementById('progressBarFill');
-    if (progressBarFill) progressBarFill.style.width = `${pctProgressoAtual}%`;
-
-    const elemDetMetrica = document.getElementById('detalhesMétricas');
-    if (elemDetMetrica) {
-        elemDetMetrica.innerHTML = `
-            🏢 <b>Presenciais:</b> ${presenciais} dia(s)<br>
-            🏠 <b>Home Office:</b> ${homeOffice} dia(s)<br>
-            🏖️️ <b>Folgas/Feriados:</b> ${folgas} dia(s)<br>
-            📅 <b>Fins de Semana:</b> ${fdsRegistrados} dia(s)
-        `;
+    if (progressBarFill) {
+        progressBarFill.style.width = `${pctProgressoAtual}%`;
     }
 
+    // Renderiza o Gráfico de Pizza
     const canvasChart = document.getElementById('graficoJornada');
     if (canvasChart) {
         const ctx = canvasChart.getContext('2d');
