@@ -102,6 +102,19 @@
             transition: all 0.2s;
         }
 
+        #btnRefresh {
+            padding: 6px 10px;
+        }
+
+        #btnRefresh.spinning i {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+}
+
         .container { padding: 15px; }
 
         .tab-content {
@@ -354,11 +367,15 @@
             <i class="bi bi-geo-alt-fill"></i>
             <h1>Controle Híbrido</h1>
         </div>
-        <button id="btnTheme" class="btn-theme-toggle" onclick="alternarTema()">
-            <i class="bi bi-moon-fill"></i>
-            <span id="lblTheme">Escuro</span>
-        </button>
-    </div>
+<div style="display: flex; gap: 8px; align-items: center;">
+    <button id="btnRefresh" class="btn-theme-toggle" onclick="atualizarDados()" title="Atualizar dados">
+        <i class="bi bi-arrow-clockwise"></i>
+    </button>
+    <button id="btnTheme" class="btn-theme-toggle" onclick="alternarTema()">
+        <i class="bi bi-moon-fill"></i>
+        <span id="lblTheme">Escuro</span>
+    </button>
+</div>
 
     <div class="container">
 
@@ -654,16 +671,38 @@
         // --- CARREGAR DADOS DA API ---
         async function carregarDados(notificar = false) {
             try {
-                const res = await fetch(`${API_URL}/registros`);
-                registrosGlobais = await res.json();
-                renderizarDashboard();
-                renderizarHistorico();
-                verificarLembretePontoHoje();
-                if (notificar) alert("✅ Dados atualizados com sucesso!");
+            const res = await fetch(`${API_URL}/registros`);
+            registrosGlobais = await res.json();
+            renderizarDashboard();
+            renderizarHistorico();
+            verificarLembretePontoHoje();
+            if (notificar) alert("✅ Dados atualizados com sucesso!");
             } catch (err) {
-                console.error("Erro ao carregar dados:", err);
-                const elem = document.getElementById("listaHistorico");
-                if (elem) elem.innerHTML = "<p style='color:#c62828;'>Erro ao carregar dados do Supabase.</p>";
+            console.error("Erro ao carregar dados:", err);
+            const elem = document.getElementById("listaHistorico");
+            if (elem) elem.innerHTML = "<p style='color:#c62828;'>Erro ao carregar dados do Supabase.</p>";
+            }
+        }
+
+        async function atualizarDados() {
+            const btn = document.getElementById('btnRefresh');
+        if (!btn) return;
+
+        // Adiciona a classe de rotação
+            btn.classList.add('spinning');
+            btn.disabled = true;
+
+            try {
+            await carregarDados();
+            console.log("🔄 Dados atualizados manualmente!");
+            } catch (err) {
+            console.error("Erro ao atualizar:", err);
+            } finally {
+        // Remove a rotação após um pequeno delay para dar feedback visual
+            setTimeout(() => {
+            btn.classList.remove('spinning');
+            btn.disabled = false;
+        }, 600);
             }
         }
 
