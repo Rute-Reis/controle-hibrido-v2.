@@ -10,7 +10,6 @@ let lngAtual = null;
 
 let dataVisualizada = new Date();
 
-// Lista oficial de feriados nacionais/regionais
 const FERIADOS_OFICIAIS = [
     "2026-01-01", "2026-01-25", "2026-02-16", "2026-02-17",
     "2026-04-03", "2026-04-21", "2026-05-01", "2026-06-04",
@@ -22,7 +21,6 @@ const FERIADOS_OFICIAIS = [
     "2027-11-20", "2027-12-25"
 ];
 
-// Tabela de regras de dias presenciais exigidos de acordo com dias úteis do mês
 const REGRAS_PLANILHA_VIVO = {
     1: 1, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 5, 10: 6,
     11: 6, 12: 7, 13: 7, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10,
@@ -35,7 +33,7 @@ const NOMES_MESES = [
 ];
 
 /* ==========================================================================
-   FUNÇÕES AUXILIARES DE FORMATAÇÃO
+   FUNÇÕES AUXILIARES
    ========================================================================== */
 function normalizarTexto(texto) {
     if (!texto) return '';
@@ -75,18 +73,15 @@ function calcularDiasUteisMes(ano, mes) {
         const ehFeriado = FERIADOS_OFICIAIS.includes(dataStr);
 
         if (!ehFds) {
-            if (ehFeriado) {
-                feriadosEmDiasUteis++;
-            } else {
-                diasUteis++;
-            }
+            if (ehFeriado) feriadosEmDiasUteis++;
+            else diasUteis++;
         }
     }
     return { diasUteis, feriadosEmDiasUteis };
 }
 
 /* ==========================================================================
-   CARREGAMENTO DE DADOS DA API
+   CARREGAMENTO DE DADOS
    ========================================================================== */
 async function carregarDados() {
     try {
@@ -100,75 +95,53 @@ async function carregarDados() {
         }
     } catch (err) {
         console.error("Erro ao carregar dados:", err);
-        const elemHist = document.getElementById("listaHistorico");
-        if (elemHist) elemHist.innerHTML = "<p style='color:#c62828; text-align:center;'>Erro ao carregar registros da API.</p>";
     }
 }
 
 /* ==========================================================================
-   RENDERIZAÇÃO DO DASHBOARD
+   RENDERIZAÇÃO DO DASHBOARD (BLINDADA)
    ========================================================================== */
 function renderizarDashboard() {
-    // Tenta pegar os elementos, mas não quebra se não existirem
     const ano = dataVisualizada.getFullYear();
     const mes = dataVisualizada.getMonth();
     const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
     const prefixoMesAno = `${ano}-${mesPad}`;
 
-    // Atualiza o título do mês (se existir)
     document.querySelectorAll('.displayMesAno').forEach(el => {
         el.innerText = `${NOMES_MESES[mes]} ${ano}`;
     });
 
-    // Filtra os registros
     const registrosDoMes = (registrosGlobais || []).filter(r => {
         const dtNorm = normalizarDataISO(r.data);
         return dtNorm && dtNorm.startsWith(prefixoMesAno);
     });
 
-    // Contagens
     const presenciais = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('presencial')).length;
     const homeOffice = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('home') || normalizarTexto(r.tipo).includes('office')).length;
     const folgas = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('folga') || normalizarTexto(r.tipo).includes('feriado')).length;
     const fdsRegistrados = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('final') || normalizarTexto(r.tipo).includes('fds')).length;
 
-    // Cálculos da Meta
     const { diasUteis, feriadosEmDiasUteis } = calcularDiasUteisMes(ano, mes);
     const metaPresencialExigida = REGRAS_PLANILHA_VIVO[diasUteis] || 12;
     const pctMetaExigida = diasUteis > 0 ? ((metaPresencialExigida / diasUteis) * 100).toFixed(2) : 0;
     const pctProgressoAtual = metaPresencialExigida > 0 ? Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1) : 0;
 
-    // --- ATUALIZAÇÃO DOS ELEMENTOS (COM VERIFICAÇÃO DE SEGURANÇA) ---
-    // AQUI ESTÁ O SEGREDO: Só atualiza se o elemento existir no HTML.
-
+    // Atualizações com verificação (NUNCA quebra se o elemento não existir)
     const elemTotalPresencial = document.getElementById('totalPresencial');
-    if (elemTotalPresencial) {
-        elemTotalPresencial.innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
-    }
+    if (elemTotalPresencial) elemTotalPresencial.innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
 
     const elemProgresso = document.getElementById('pctProgressoAtual');
-    if (elemProgresso) {
-        elemProgresso.innerText = `🎯 Progresso Atual: ${pctProgressoAtual}% da meta concluída`;
-    }
+    if (elemProgresso) elemProgresso.innerText = `🎯 Progresso Atual: ${pctProgressoAtual}% da meta concluída`;
 
     const elemDetalhesMeta = document.getElementById('pctPresencial');
-    if (elemDetalhesMeta) {
-        elemDetalhesMeta.innerText = `Mês tem ${diasUteis} dias úteis (descontados ${feriadosEmDiasUteis} feriado(s)) | Meta: ${metaPresencialExigida} dias (${pctMetaExigida}%)`;
-    }
-
-    const elemDetalhesMétricas = document.getElementById('detalhesMétricas');
-    if (elemDetalhesMétricas) {
-        elemDetalhesMétricas.innerText = `Presenciais: ${presenciais} | Home Office: ${homeOffice} | Folgas: ${folgas} | FDS: ${fdsRegistrados}`;
-    }
+    if (elemDetalhesMeta) elemDetalhesMeta.innerText = `Mês tem ${diasUteis} dias úteis (descontados ${feriadosEmDiasUteis} feriado(s)) | Meta: ${metaPresencialExigida} dias (${pctMetaExigida}%)`;
 
     const progressBarFill = document.getElementById('progressBarFill');
-    if (progressBarFill) {
-        progressBarFill.style.width = `${pctProgressoAtual}%`;
-    }
+    if (progressBarFill) progressBarFill.style.width = `${pctProgressoAtual}%`;
 
-    // Renderiza o Gráfico de Pizza (Verifica se o canvas existe)
+    // Gráfico
     const canvasChart = document.getElementById('graficoJornada');
-    if (canvasChart) {
+    if (canvasChart && typeof Chart !== 'undefined') {
         const ctx = canvasChart.getContext('2d');
         if (chartInstancia) chartInstancia.destroy();
 
@@ -245,7 +218,8 @@ function renderizarCalendario() {
         }
 
         elDia.onclick = () => {
-            document.getElementById('dataManual').value = dataISO;
+            const inputData = document.getElementById('dataManual');
+            if (inputData) inputData.value = dataISO;
             mudarAba('tabNovo', document.querySelectorAll('.nav-item')[1]);
         };
 
@@ -254,7 +228,7 @@ function renderizarCalendario() {
 }
 
 /* ==========================================================================
-   RENDERIZAÇÃO DO HISTÓRICO EXPANSÍVEL
+   RENDERIZAÇÃO DO HISTÓRICO
    ========================================================================== */
 function renderizarHistorico() {
     const lista = document.getElementById('listaHistorico');
@@ -281,7 +255,6 @@ function renderizarHistorico() {
 
         const card = document.createElement('div');
         card.className = 'hist-item-card';
-
         const mapId = `map-hist-${idx}`;
 
         card.innerHTML = `
@@ -302,7 +275,6 @@ function renderizarHistorico() {
                 </div>
             </div>
         `;
-
         lista.appendChild(card);
     });
 }
@@ -312,8 +284,6 @@ function toggleDetalhesHistorico(mapId, lat, lng) {
     if (!detailsDiv) return;
 
     const isActive = detailsDiv.classList.contains('active');
-    
-    // Fecha todos os outros detalhes abertos
     document.querySelectorAll('.hist-details').forEach(el => el.classList.remove('active'));
 
     if (!isActive) {
@@ -334,14 +304,14 @@ function toggleDetalhesHistorico(mapId, lat, lng) {
 }
 
 /* ==========================================================================
-   GEOLOCALIZAÇÃO E MAPA DE REGISTRO
+   GEOLOCALIZAÇÃO
    ========================================================================== */
 function inicializarMapaRegistro() {
     const containerMapa = document.getElementById('mapaLocal');
     if (!containerMapa) return;
 
     if (!mapaInstancia) {
-        mapaInstancia = L.map('mapaLocal').setView([-23.55052, -46.633308], 12); // Padrão SP
+        mapaInstancia = L.map('mapaLocal').setView([-23.55052, -46.633308], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(mapaInstancia);
@@ -362,48 +332,56 @@ function inicializarMapaRegistro() {
 }
 
 /* ==========================================================================
-   ENVIO DO FORMULÁRIO E APAGAR REGISTRO
+   ENVIO DO FORMULÁRIO
    ========================================================================== */
-document.getElementById('formPonto')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btnSalvar = document.getElementById('btnSalvar');
-    const statusMsg = document.getElementById('statusMsg');
-    
-    btnSalvar.disabled = true;
-    statusMsg.innerText = "Enviando registro...";
-    statusMsg.className = "status-msg";
+function inicializarFormulario() {
+    const form = document.getElementById('formPonto');
+    if (!form) return;
 
-    const formData = new FormData(this);
-    if (latAtual) formData.append('latitude', latAtual);
-    if (lngAtual) formData.append('longitude', lngAtual);
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btnSalvar = document.getElementById('btnSalvar');
+        const statusMsg = document.getElementById('statusMsg');
+        
+        btnSalvar.disabled = true;
+        statusMsg.innerText = "Enviando registro...";
+        statusMsg.className = "status-msg";
 
-    try {
-        const res = await fetch(`${API_URL}/registrar`, {
-            method: 'POST',
-            body: formData
-        });
+        const formData = new FormData(this);
+        if (latAtual) formData.append('latitude', latAtual);
+        if (lngAtual) formData.append('longitude', lngAtual);
 
-        if (res.ok) {
-            statusMsg.innerText = "✅ Ponto registrado com sucesso!";
-            statusMsg.className = "status-msg status-sucesso";
-            this.reset();
-            await carregarDados();
-            setTimeout(() => {
-                statusMsg.innerText = "";
-                mudarAba('tabDashboard', document.querySelectorAll('.nav-item')[0]);
-            }, 1500);
-        } else {
-            throw new Error("Erro na resposta do servidor");
+        try {
+            const res = await fetch(`${API_URL}/registrar`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                statusMsg.innerText = "✅ Ponto registrado com sucesso!";
+                statusMsg.className = "status-msg status-sucesso";
+                this.reset();
+                await carregarDados();
+                setTimeout(() => {
+                    statusMsg.innerText = "";
+                    mudarAba('tabDashboard', document.querySelectorAll('.nav-item')[0]);
+                }, 1500);
+            } else {
+                throw new Error("Erro na resposta do servidor");
+            }
+        } catch (err) {
+            console.error(err);
+            statusMsg.innerText = "❌ Erro ao salvar ponto. Tente novamente.";
+            statusMsg.className = "status-msg status-erro";
+        } finally {
+            btnSalvar.disabled = false;
         }
-    } catch (err) {
-        console.error(err);
-        statusMsg.innerText = "❌ Erro ao salvar ponto. Tente novamente.";
-        statusMsg.className = "status-msg status-erro";
-    } finally {
-        btnSalvar.disabled = false;
-    }
-});
+    });
+}
 
+/* ==========================================================================
+   APAGAR REGISTRO
+   ========================================================================== */
 async function apagarRegistro(id) {
     if (!confirm("Tem certeza que deseja apagar este registro?")) return;
 
@@ -421,7 +399,7 @@ async function apagarRegistro(id) {
 }
 
 /* ==========================================================================
-   EXPORTAÇÃO DE DADOS (CSV)
+   EXPORTAÇÃO CSV
    ========================================================================== */
 function exportarCSV() {
     if (registrosGlobais.length === 0) {
@@ -451,7 +429,7 @@ function exportarCSV() {
 }
 
 /* ==========================================================================
-   MODAIS, TEMAS E NAVEGAÇÃO DE ABAS
+   MODAIS, TEMAS E NAVEGAÇÃO
    ========================================================================== */
 function mudarAba(idAba, elBtn) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -470,11 +448,11 @@ function alternarTema() {
     document.body.classList.toggle('dark-mode');
     const isDark = document.body.classList.contains('dark-mode');
     
-    document.getElementById('lblTheme').innerText = isDark ? "Claro" : "Escuro";
+    const lblTheme = document.getElementById('lblTheme');
+    if (lblTheme) lblTheme.innerText = isDark ? "Claro" : "Escuro";
+    
     const icone = document.querySelector('#btnTheme i');
-    if (icone) {
-        icone.className = isDark ? "bi bi-sun-fill" : "bi bi-moon-fill";
-    }
+    if (icone) icone.className = isDark ? "bi bi-sun-fill" : "bi bi-moon-fill";
 
     renderizarDashboard();
 }
@@ -514,8 +492,10 @@ function fecharModal() {
 }
 
 /* ==========================================================================
-   INICIALIZAÇÃO DA APLICAÇÃO
+   INICIALIZAÇÃO (SÓ RODA DEPOIS DO DOM ESTAR PRONTO)
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("🚀 App iniciado, carregando dados...");
+    inicializarFormulario();
     carregarDados();
 });
