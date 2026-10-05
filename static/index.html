@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meu Controle Híbrido v2</title>
-    
+
     <!-- SUPORTE NATIVO PARA IOS (IPHONE) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Controle Híbrido">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/app-icon.png">
 
-    <!-- LEAFLET E BOOTSTRAP ICONS -->
+    <!-- LEAFLET, BOOTSTRAP ICONS E CHART.JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
             --bg-body: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
@@ -35,7 +36,7 @@
             --bg-folga: #fff3e0;
             --color-fds: #9c27b0;
             --bg-fds: #f3e5f5;
-            
+
             --nav-active: #0d3b66;
         }
 
@@ -58,12 +59,12 @@
             --color-folga: #ffb74d;
             --bg-fds: #3b1348;
             --color-fds: #ba68c8;
-            
+
             --nav-active: #4dabf7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        
+
         body { 
             background: var(--bg-body); 
             color: var(--text-main); 
@@ -74,7 +75,7 @@
             -webkit-tap-highlight-color: transparent; 
             transition: background 0.3s, color 0.3s;
         }
-        
+
         .header { 
             text-align: center; 
             padding: 16px 18px; 
@@ -107,7 +108,7 @@
         }
 
         .container { padding: 15px; }
-        
+
         .tab-content { 
             display: none; 
             opacity: 0;
@@ -174,7 +175,7 @@
         }
 
         label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
-        select, input {
+        select, input, textarea {
             width: 100%;
             padding: 12px;
             background-color: var(--bg-input);
@@ -222,7 +223,7 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
-        
+
         .nav-item { 
             background: none !important; 
             border: none !important; 
@@ -264,7 +265,7 @@
         .cal-head { font-size: 11px; color: var(--text-muted); font-weight: bold; padding-bottom: 4px; }
         .cal-empty { background: transparent; }
         .cal-day { background-color: var(--bg-input); padding: 10px 0; border-radius: 10px; font-size: 12px; cursor: pointer; border: 1px solid transparent; color: var(--text-main); font-weight: 500; }
-        
+
         .cal-day.Presencial { background-color: var(--bg-presencial); color: var(--color-presencial); font-weight: bold; border: 1px solid var(--color-presencial); }
         .cal-day.HomeOffice { background-color: var(--bg-homeoffice); color: var(--color-homeoffice); font-weight: bold; border: 1px solid var(--color-homeoffice); }
         .cal-day.Folga { background-color: var(--bg-folga); color: var(--color-folga); font-weight: bold; border: 1px solid var(--color-folga); }
@@ -291,680 +292,150 @@
         .card-actions { display: flex; gap: 8px; margin-top: 12px; }
         .btn-action-delete { background-color: #dc3545; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; width: auto; }
 
-        .reminder-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-            padding: 20px;
-        }
-        .reminder-box {
-            background: var(--bg-card);
-            padding: 24px 20px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 360px;
-            width: 100%;
-            border: 1px solid var(--border-card);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            animation: slideUp 0.3s ease-out;
-        }
-        .reminder-icon { font-size: 42px; color: #0288d1; margin-bottom: 10px; }
+        .progress-bar-bg { background-color: var(--bg-input); border-radius: 8px; height: 10px; width: 100%; overflow: hidden; margin: 10px 0; border: 1px solid var(--border-color); }
+        .progress-bar-fill { background: linear-gradient(90deg, #2e7d32, #81c784); height: 100%; width: 0%; transition: width 0.4s ease; }
 
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.9); 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 2000; 
-            padding: 20px;
-        }
-        .modal img { max-width: 95%; max-height: 85%; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
+        .map-container { height: 180px; width: 100%; border-radius: 12px; margin-top: 10px; z-index: 1; }
+        .map-hist { height: 150px; width: 100%; border-radius: 10px; margin-top: 8px; z-index: 1; }
+        .thumb-img { max-width: 100%; max-height: 120px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .map-hist { height: 150px; width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid var(--border-color); }
-        .thumb-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); cursor: pointer; }
-        #mapaLocal { height: 180px; width: 100%; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--border-color); z-index: 1; }
-
-        .status-msg { text-align: center; font-size: 13px; margin-top: 10px; font-weight: 500; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--bg-card); padding: 20px; border-radius: 16px; max-width: 400px; width: 100%; text-align: center; color: var(--text-main); }
+        .status-msg { text-align: center; font-size: 13px; font-weight: bold; margin-top: 8px; }
         .status-sucesso { color: #2e7d32; }
-        .status-erro { color: #c62828; }
-
-        .chart-container { position: relative; height: 220px; width: 100%; margin-top: 10px; }
-        .progress-bar-bg { background-color: var(--bg-input); height: 14px; border-radius: 7px; overflow: hidden; margin-top: 10px; }
-        .progress-bar-fill { background-color: #2e7d32; height: 100%; width: 0%; transition: width 0.5s ease; }
+        .status-erro { color: #dc3545; }
     </style>
 </head>
 <body>
 
+    <!-- CABEÇALHO -->
     <div class="header">
         <div class="header-title">
-            <i class="bi bi-geo-alt-fill"></i>
+            <i class="bi bi-calendar-check-fill"></i>
             <h1>Controle Híbrido</h1>
         </div>
         <button id="btnTheme" class="btn-theme-toggle" onclick="alternarTema()">
-            <i class="bi bi-moon-fill"></i>
-            <span id="lblTheme">Escuro</span>
+            <i class="bi bi-moon-fill"></i> <span id="lblTheme">Escuro</span>
         </button>
     </div>
 
     <div class="container">
-        
-        <!-- 🏠 ABA 1: DASHBOARD -->
+
+        <!-- ABA 1: DASHBOARD -->
         <div id="tabDashboard" class="tab-content active">
             <div class="month-selector">
-                <button class="btn-month-nav" onclick="navegarMes(-1)">◀ Anterior</button>
-                <div class="month-title displayMesAno">Outubro 2026</div>
-                <button class="btn-month-nav" onclick="navegarMes(1)">Próximo ▶</button>
+                <button class="btn-month-nav" onclick="navegarMes(-1)"><i class="bi bi-chevron-left"></i></button>
+                <span class="month-title displayMesAno"></span>
+                <button class="btn-month-nav" onclick="navegarMes(1)"><i class="bi bi-chevron-right"></i></button>
             </div>
 
             <div class="card">
-                <h3>📊 Meta de Frequência do Mês</h3>
-                <p id="totalPresencial" style="font-size: 22px; color: #2e7d32; font-weight: bold; margin-bottom: 4px;">0 / 0 Dias Presenciais</p>
-                <p id="pctProgressoAtual" style="font-size: 14px; color: #4dabf7; font-weight: 700; margin-bottom: 6px;">
-                    🎯 Progresso Atual: 0% da meta alcançada
-                </p>
-                <p id="pctPresencial" style="color: var(--text-muted); font-size: 12px;">Calculando meta do mês...</p>
+                <h3>📊 Progresso do Mês</h3>
+                <h2 id="totalPresencial" style="font-size: 18px; color: var(--color-presencial);">0 Dias Presenciais</h2>
                 <div class="progress-bar-bg">
                     <div id="progressBarFill" class="progress-bar-fill"></div>
                 </div>
+                <p id="pctProgressoAtual" style="font-size: 12px; font-weight: bold; margin-top: 4px;"></p>
+                <p id="pctPresencial" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;"></p>
             </div>
 
             <div class="card">
                 <h3>📈 Distribuição de Jornada</h3>
-                <div class="chart-container">
+                <div style="height: 200px; position: relative;">
                     <canvas id="graficoJornada"></canvas>
                 </div>
+                <div id="detalhesMétricas" style="font-size: 12px; margin-top: 12px; line-height: 1.6;"></div>
             </div>
 
             <div class="card">
-                <h3>📌 Métricas Detalhadas do Mês</h3>
-                <div id="detalhesMétricas" style="font-size: 13px; line-height: 1.8; color: var(--text-main);">
-                    Carregando métricas...
-                </div>
+                <h3>🗓 Calendário Mensal</h3>
+                <div id="gridCalendario" class="cal-grid"></div>
             </div>
         </div>
 
-        <!-- ➕ ABA 2: NOVO REGISTRO -->
+        <!-- ABA 2: NOVO REGISTRO DE PONTO -->
         <div id="tabNovo" class="tab-content">
             <div class="card">
-                <h3>📍 Registrar Novo Ponto</h3>
+                <h3>📌 Registrar Ponto</h3>
                 <form id="formPonto">
-                    <label for="dataManual">Data (Deixe em branco para HOJE)</label>
-                    <input type="date" id="dataManual" name="data_manual">
+                    <label for="dataManual">Data:</label>
+                    <input type="date" id="dataManual" name="data" required>
 
-                    <label for="tipo">Tipo de Jornada</label>
-                    <select id="tipo" name="tipo">
-                        <option value="Presencial">🏢 Presencial</option>
-                        <option value="Home Office">🏠 Home Office</option>
-                        <option value="Folga / Feriado">🏖️️ Folga / Feriado</option>
-                        <option value="Final de Semana">📅 Final de Semana</option>
+                    <label for="tipo">Tipo de Ponto:</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="Presencial">Presencial</option>
+                        <option value="Home Office">Home Office</option>
+                        <option value="Folga">Folga / Feriado</option>
+                        <option value="Final de Semana">Final de Semana</option>
                     </select>
 
-                    <label for="empresa">Empresa</label>
-                    <input type="text" id="empresa" name="empresa" value="Vivo">
+                    <label for="empresa">Empresa:</label>
+                    <input type="text" id="empresa" name="empresa" value="Vivo" placeholder="Nome da Empresa">
 
-                    <label for="foto">Foto do Comprovante (Câmera ou Galeria)</label>
-                    <input type="file" id="foto" name="foto" accept="image/*" capture="environment">
+                    <label for="observacao">Observação:</label>
+                    <input type="text" id="observacao" name="observacao" placeholder="Ex: Reunião presencial de equipe">
 
-                    <label for="observacao">Observação / Nota</label>
-                    <input type="text" id="observacao" name="observacao" placeholder="Ex: Trabalho presencial na sede">
+                    <label for="foto">Comprovante / Foto:</label>
+                    <input type="file" id="foto" name="foto" accept="image/*">
 
-                    <label>Sua Localização (GPS)</label>
-                    <div id="mapaLocal"></div>
+                    <label>Localização Atual (GPS):</label>
+                    <div id="mapaLocal" class="map-container"></div>
 
-                    <button type="submit" id="btnSalvar">📍 Salvar Ponto Agora</button>
+                    <button type="submit" id="btnSalvar" style="margin-top: 16px;">💾 Salvar Registro</button>
+                    <div id="statusMsg" class="status-msg"></div>
                 </form>
-                <div id="statusMsg" class="status-msg"></div>
             </div>
         </div>
 
-        <!-- 📅 ABA 3: CALENDÁRIO -->
-        <div id="tabCalendario" class="tab-content">
-            <div class="month-selector">
-                <button class="btn-month-nav" onclick="navegarMes(-1)">◀ Anterior</button>
-                <div class="month-title displayMesAno">Outubro 2026</div>
-                <button class="btn-month-nav" onclick="navegarMes(1)">Próximo ▶</button>
-            </div>
-
-            <div class="card">
-                <h3>📅 Calendário do Mês (Clique para registrar)</h3>
-                <div class="cal-grid" id="gridCalendario"></div>
-            </div>
-        </div>
-
-        <!-- 📜 ABA 4: HISTÓRICO EXPANSÍVEL -->
+        <!-- ABA 3: HISTÓRICO -->
         <div id="tabHistorico" class="tab-content">
-            <div class="card">
+            <div class="card" style="padding-bottom: 8px;">
                 <h3>
-                    <span>📜 Histórico Completo</span>
-                    <button class="btn-export" onclick="exportarCSV()">📥 Baixar CSV</button>
+                    📜 Histórico Registrado
+                    <button class="btn-export" onclick="exportarCSV()"><i class="bi bi-download"></i> CSV</button>
                 </h3>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">💡 Clique em qualquer registro para ver detalhes, apagar ou editar.</p>
-                <div id="listaHistorico">Carregando histórico...</div>
             </div>
+            <div id="listaHistorico"></div>
         </div>
 
-    </div>
-
-    <!-- MODAL DE LEMBRETE -->
-    <div id="reminderModal" class="reminder-modal">
-        <div class="reminder-box">
-            <i class="bi bi-alarm-fill reminder-icon"></i>
-            <h3 style="font-size:18px; margin-bottom:8px;">Lembrete de Ponto</h3>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">
-                Você ainda não registrou a sua jornada de trabalho de hoje.
-            </p>
-            <button onclick="irParaRegistroPonto()" style="margin-bottom:8px;">📍 Registrar Agora</button>
-            <button onclick="fecharLembrete()" style="background:transparent; color:var(--text-muted); box-shadow:none; padding:8px;">Lembrar mais tarde</button>
-        </div>
-    </div>
-
-    <!-- MODAL PARA AMPLIAR A FOTO EM TELA CHEIA -->
-    <div id="imgModal" class="modal" onclick="fecharModal()">
-        <img id="imgExpanded" src="" alt="Foto Ampliada">
     </div>
 
     <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="mudarAba('tabDashboard', this)">
             <i class="bi bi-house-door-fill"></i>
-            Dashboard
+            <span>Início</span>
         </button>
         <button class="nav-item" onclick="mudarAba('tabNovo', this)">
             <i class="bi bi-plus-circle-fill"></i>
-            Novo
-        </button>
-        <button class="nav-item" onclick="mudarAba('tabCalendario', this)">
-            <i class="bi bi-calendar-event-fill"></i>
-            Calendário
+            <span>Registrar</span>
         </button>
         <button class="nav-item" onclick="mudarAba('tabHistorico', this)">
             <i class="bi bi-clock-history"></i>
-            Histórico
+            <span>Histórico</span>
         </button>
     </div>
 
-    <!-- BIBLIOTECAS EXTERNAS -->
+    <!-- MODAL DE LEMBRETE DE PONTO -->
+    <div id="reminderModal" class="modal">
+        <div class="modal-content">
+            <i class="bi bi-alarm" style="font-size: 36px; color: #0d3b66;"></i>
+            <h3 style="margin: 10px 0;">Lembrete de Ponto</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Você ainda não registrou o seu ponto de hoje!</p>
+            <button onclick="irParaRegistroPonto()">Registrar Agora</button>
+            <button onclick="fecharLembrete()" style="background: transparent; color: var(--text-muted); border: none; margin-top: 8px; box-shadow: none;">Lembrar depois</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE IMAGEM AMPLIADA -->
+    <div id="imgModal" class="modal" onclick="fecharModal()">
+        <div class="modal-content" style="background: transparent; box-shadow: none;">
+            <img id="imgExpanded" src="" style="max-width: 100%; max-height: 80vh; border-radius: 12px;" alt="Ampliado">
+        </div>
+    </div>
+
+    <!-- LEAFLET JS E SCRIPT DA APLICAÇÃO -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        const API_URL = "/api";
-        let registrosGlobais = [];
-        let mapaInstancia = null;
-        let chartInstancia = null;
-        let latAtual = null;
-        let lngAtual = null;
-
-        let dataVisualizada = new Date();
-
-        const FERIADOS_OFICIAIS = [
-            "2026-01-01", "2026-01-25", "2026-02-16", "2026-02-17",
-            "2026-04-03", "2026-04-21", "2026-05-01", "2026-06-04",
-            "2026-07-09", "2026-09-07", "2026-10-12", "2026-11-02",
-            "2026-11-15", "2026-11-20", "2026-12-25",
-            "2027-01-01", "2027-02-08", "2027-02-09", "2027-03-26",
-            "2027-04-21", "2027-05-01", "2027-05-27", "2027-07-09",
-            "2027-09-07", "2027-10-12", "2027-11-02", "2027-11-15",
-            "2027-11-20", "2027-12-25"
-        ];
-
-        const REGRAS_PLANILHA_VIVO = {
-            1: 1, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 5, 10: 6,
-            11: 6, 12: 7, 13: 7, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10,
-            19: 11, 20: 12, 21: 12, 22: 13, 23: 13, 24: 14
-        };
-
-        const NOMES_MESES = [
-            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-        ];
-
-        function normalizarTexto(texto) {
-            if (!texto) return '';
-            return texto.toString().trim().toLowerCase();
-        }
-
-        function normalizarDataISO(dataStr) {
-            if (!dataStr) return "";
-            if (dataStr.includes("T")) dataStr = dataStr.split("T")[0];
-            if (dataStr.includes("/")) {
-                const p = dataStr.split("/");
-                if (p.length === 3) return `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
-            }
-            return dataStr;
-        }
-
-        function navegarMes(direcao) {
-            dataVisualizada.setMonth(dataVisualizada.getMonth() + direcao);
-            renderizarDashboard();
-            renderizarCalendario();
-        }
-
-        function calcularDiasUteisMes(ano, mes) {
-            const totalDiasNoMes = new Date(ano, mes + 1, 0).getDate();
-            let diasUteis = 0;
-            let feriadosEmDiasUteis = 0;
-
-            for (let dia = 1; dia <= totalDiasNoMes; dia++) {
-                const dataObj = new Date(ano, mes, dia);
-                const diaSemana = dataObj.getDay();
-                
-                const diaPad = dia < 10 ? '0' + dia : dia;
-                const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
-                const dataStr = `${ano}-${mesPad}-${diaPad}`;
-
-                const ehFds = (diaSemana === 0 || diaSemana === 6);
-                const ehFeriado = FERIADOS_OFICIAIS.includes(dataStr);
-
-                if (!ehFds) {
-                    if (ehFeriado) {
-                        feriadosEmDiasUteis++;
-                    } else {
-                        diasUteis++;
-                    }
-                }
-            }
-            return { diasUteis, feriadosEmDiasUteis };
-        }
-
-        async function carregarDados() {
-            try {
-                const res = await fetch(`${API_URL}/registros`);
-                if (res.ok) {
-                    registrosGlobais = await res.json();
-                    renderizarDashboard();
-                    renderizarCalendario();
-                    renderizarHistorico();
-                    verificarLembretePontoHoje();
-                }
-            } catch (err) {
-                console.error("Erro ao carregar dados:", err);
-                const elemHist = document.getElementById("listaHistorico");
-                if (elemHist) elemHist.innerHTML = "<p style='color:#c62828;'>Erro ao carregar registos da API.</p>";
-            }
-        }
-
-        function renderizarDashboard() {
-            const ano = dataVisualizada.getFullYear();
-            const mes = dataVisualizada.getMonth();
-            const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
-            const prefixoMesAno = `${ano}-${mesPad}`;
-
-            document.querySelectorAll('.displayMesAno').forEach(el => {
-                el.innerText = `${NOMES_MESES[mes]} ${ano}`;
-            });
-
-            const registrosDoMes = (registrosGlobais || []).filter(r => {
-                const dtNorm = normalizarDataISO(r.data);
-                return dtNorm && dtNorm.startsWith(prefixoMesAno);
-            });
-
-            const presenciais = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('presencial')).length;
-            const homeOffice = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('home') || normalizarTexto(r.tipo).includes('office')).length;
-            const folgas = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('folga') || normalizarTexto(r.tipo).includes('feriado')).length;
-            const fdsRegistrados = registrosDoMes.filter(r => normalizarTexto(r.tipo).includes('final') || normalizarTexto(r.tipo).includes('fds')).length;
-
-            const { diasUteis, feriadosEmDiasUteis } = calcularDiasUteisMes(ano, mes);
-            const metaPresencialExigida = REGRAS_PLANILHA_VIVO[diasUteis] || 12;
-            const pctMetaExigida = diasUteis > 0 ? ((metaPresencialExigida / diasUteis) * 100).toFixed(2) : 0;
-            const pctProgressoAtual = metaPresencialExigida > 0 ? Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1) : 0;
-
-            const elemTotalPresencial = document.getElementById('totalPresencial');
-            if (elemTotalPresencial) elemTotalPresencial.innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
-
-            const elemProgresso = document.getElementById('pctProgressoAtual');
-            if (elemProgresso) elemProgresso.innerText = `🎯 Progresso Atual: ${pctProgressoAtual}% da meta concluída`;
-
-            const elemDetalhesMeta = document.getElementById('pctPresencial');
-            if (elemDetalhesMeta) {
-                elemDetalhesMeta.innerText = `Mês tem ${diasUteis} dias úteis (descontados ${feriadosEmDiasUteis} feriado(s)) | Meta: ${metaPresencialExigida} dias (${pctMetaExigida}%)`;
-            }
-
-            const progressBarFill = document.getElementById('progressBarFill');
-            if (progressBarFill) progressBarFill.style.width = `${pctProgressoAtual}%`;
-
-            const elemDetMetrica = document.getElementById('detalhesMétricas');
-            if (elemDetMetrica) {
-                elemDetMetrica.innerHTML = `
-                    🏢 <b>Presenciais:</b> ${presenciais} dia(s)<br>
-                    🏠 <b>Home Office:</b> ${homeOffice} dia(s)<br>
-                    🏖️ <b>Folgas/Feriados:</b> ${folgas} dia(s)<br>
-                    📅 <b>Fins de Semana:</b> ${fdsRegistrados} dia(s)
-                `;
-            }
-
-            const canvasChart = document.getElementById('graficoJornada');
-            if (canvasChart) {
-                const ctx = canvasChart.getContext('2d');
-                if (chartInstancia) chartInstancia.destroy();
-
-                const isDark = document.body.classList.contains('dark-mode');
-                const textColor = isDark ? '#ffffff' : '#212529';
-
-                chartInstancia = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Home Office', 'Folga (Feriado)', 'Final de Semana', 'Presencial'],
-                        datasets: [{
-                            data: [homeOffice, folgas, fdsRegistrados, presenciais],
-                            backgroundColor: ['#0288d1', '#ed6c02', '#9c27b0', '#2e7d32'],
-                            borderWidth: 2,
-                            borderColor: isDark ? '#1e1e1e' : '#ffffff',
-                            hoverOffset: 15
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'right', labels: { color: textColor, font: { size: 12, weight: 'bold' } } }
-                        }
-                    }
-                });
-            }
-        }
-
-        function renderizarCalendario() {
-            const grid = document.getElementById('gridCalendario');
-            if (!grid) return;
-            grid.innerHTML = '';
-
-            const ano = dataVisualizada.getFullYear();
-            const mes = dataVisualizada.getMonth();
-
-            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-            diasSemana.forEach(d => {
-                const head = document.createElement('div');
-                head.className = 'cal-head';
-                head.innerText = d;
-                grid.appendChild(head);
-            });
-
-            const primeiroDiaIndex = new Date(ano, mes, 1).getDay();
-            const totalDiasMes = new Date(ano, mes + 1, 0).getDate();
-
-            for (let i = 0; i < primeiroDiaIndex; i++) {
-                const empty = document.createElement('div');
-                empty.className = 'cal-empty';
-                grid.appendChild(empty);
-            }
-
-            for (let dia = 1; dia <= totalDiasMes; dia++) {
-                const diaPad = dia < 10 ? '0' + dia : dia;
-                const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
-                const dataISO = `${ano}-${mesPad}-${diaPad}`;
-
-                const elDia = document.createElement('div');
-                elDia.className = 'cal-day';
-                elDia.innerText = dia;
-
-                const reg = registrosGlobais.find(r => normalizarDataISO(r.data) === dataISO);
-                if (reg) {
-                    const tipoNorm = normalizarTexto(reg.tipo);
-                    if (tipoNorm.includes('presencial')) elDia.classList.add('Presencial');
-                    else if (tipoNorm.includes('home') || tipoNorm.includes('office')) elDia.classList.add('HomeOffice');
-                    else if (tipoNorm.includes('folga') || tipoNorm.includes('feriado')) elDia.classList.add('Folga');
-                    else if (tipoNorm.includes('final') || tipoNorm.includes('fds')) elDia.classList.add('FinalDeSemana');
-                }
-
-                elDia.onclick = () => {
-                    document.getElementById('dataManual').value = dataISO;
-                    mudarAba('tabNovo', document.querySelectorAll('.nav-item')[1]);
-                };
-
-                grid.appendChild(elDia);
-            }
-        }
-
-        function renderizarHistorico() {
-            const lista = document.getElementById('listaHistorico');
-            if (!lista) return;
-
-            if (registrosGlobais.length === 0) {
-                lista.innerHTML = "<p style='text-align:center; color:var(--text-muted); font-size:13px;'>Nenhum ponto registrado ainda.</p>";
-                return;
-            }
-
-            lista.innerHTML = '';
-            const ordenados = [...registrosGlobais].sort((a, b) => new Date(b.data) - new Date(a.data));
-
-            ordenados.forEach((r, idx) => {
-                const dtNorm = normalizarDataISO(r.data);
-                const partes = dtNorm.split('-');
-                const dataBR = partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : r.data;
-
-                const card = document.createElement('div');
-                card.className = 'hist-item-card';
-                card.innerHTML = `
-                    <div class="hist-header-content" onclick="toggleDetails(${idx})">
-                        <div>
-                            <strong>${dataBR}</strong><br>
-                            <span class="badge-tipo badge-${obterClasseTipo(r.tipo)}">${r.tipo}</span>
-                        </div>
-                        <i class="bi bi-chevron-down" id="icon-hist-${idx}"></i>
-                    </div>
-                    <div class="hist-details" id="details-hist-${idx}">
-                        <p><strong>Empresa:</strong> ${r.empresa || 'Vivo'}</p>
-                        <p><strong>Observação:</strong> ${r.observacao || 'Nenhuma'}</p>
-                        ${r.latitude && r.longitude ? `<p><strong>GPS:</strong> ${r.latitude},${r.longitude}</p>` : ''}
-                        <div class="card-actions">
-                            <button class="btn-action-delete" onclick="deletarRegistro('${r.id}')">🗑️ Apagar</button>
-                        </div>
-                    </div>
-                `;
-                lista.appendChild(card);
-            });
-        }
-
-        function obterClasseTipo(tipo) {
-            const t = normalizarTexto(tipo);
-            if (t.includes('presencial')) return 'Presencial';
-            if (t.includes('home') || t.includes('office')) return 'HomeOffice';
-            if (t.includes('folga') || t.includes('feriado')) return 'Folga';
-            return 'FinalDeSemana';
-        }
-
-        function toggleDetails(idx) {
-            const details = document.getElementById(`details-hist-${idx}`);
-            const icon = document.getElementById(`icon-hist-${idx}`);
-            if (details) {
-                details.classList.toggle('active');
-                if (icon) icon.className = details.classList.contains('active') ? "bi bi-chevron-up" : "bi bi-chevron-down";
-            }
-        }
-
-        async function deletarRegistro(id) {
-            if (!confirm("Tem certeza que deseja excluir este registro?")) return;
-            try {
-                const res = await fetch(`${API_URL}/registros/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    alert("Registro excluído com sucesso!");
-                    carregarDados();
-                } else {
-                    alert("Erro ao excluir o registro.");
-                }
-            } catch (err) {
-                alert("Erro ao conectar com o servidor.");
-            }
-        }
-
-        function carregarMapaGPS() {
-            if (mapaInstancia) return;
-            const container = document.getElementById('mapaLocal');
-            if (!container) return;
-
-            mapaInstancia = L.map('mapaLocal').setView([-23.5505, -46.6333], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapaInstancia);
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    latAtual = pos.coords.latitude;
-                    lngAtual = pos.coords.longitude;
-                    mapaInstancia.setView([latAtual, lngAtual], 16);
-                    L.marker([latAtual, lngAtual]).addTo(mapaInstancia).bindPopup("Você está aqui!").openPopup();
-                });
-            }
-        }
-
-        document.getElementById('formPonto').onsubmit = async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSalvar');
-            const status = document.getElementById('statusMsg');
-
-            btn.disabled = true;
-            status.innerText = "Guardando registo...";
-
-            const formData = new FormData(this);
-            if (latAtual && lngAtual) {
-                formData.append('latitude', latAtual);
-                formData.append('longitude', lngAtual);
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/registros`, { method: 'POST', body: formData });
-                if (res.ok) {
-                    status.className = "status-msg status-sucesso";
-                    status.innerText = "Ponto gravado com sucesso!";
-                    this.reset();
-                    carregarDados();
-                    setTimeout(() => mudarAba('tabDashboard', document.querySelectorAll('.nav-item')[0]), 1200);
-                } else {
-                    status.className = "status-msg status-erro";
-                    status.innerText = "Erro ao guardar o ponto.";
-                }
-            } catch (err) {
-                status.className = "status-msg status-erro";
-                status.innerText = "Erro na ligação ao servidor.";
-            } finally {
-                btn.disabled = false;
-            }
-        };
-
-        function verificarLembretePontoHoje() {
-            const agora = new Date();
-            const diaSemana = agora.getDay();
-            const ano = agora.getFullYear();
-            const mes = (agora.getMonth() + 1) < 10 ? '0' + (agora.getMonth() + 1) : (agora.getMonth() + 1);
-            const dia = agora.getDate() < 10 ? '0' + agora.getDate() : agora.getDate();
-            const dataHojeISO = `${ano}-${mes}-${dia}`;
-
-            if (diaSemana !== 0 && diaSemana !== 6 && !FERIADOS_OFICIAIS.includes(dataHojeISO)) {
-                const pontoFeitoHoje = registrosGlobais.some(r => normalizarDataISO(r.data) === dataHojeISO);
-                const jaLembrouHoje = sessionStorage.getItem(`lembrete_${dataHojeISO}`);
-
-                if (!pontoFeitoHoje && !jaLembrouHoje) {
-                    setTimeout(() => {
-                        const modal = document.getElementById('reminderModal');
-                        if (modal) modal.style.display = 'flex';
-                    }, 1000);
-                }
-            }
-        }
-
-        function fecharLembrete() {
-            const agora = new Date();
-            const dataHojeISO = `${agora.getFullYear()}-${agora.getMonth() + 1}-${agora.getDate()}`;
-            sessionStorage.setItem(`lembrete_${dataHojeISO}`, 'true');
-            const modal = document.getElementById('reminderModal');
-            if (modal) modal.style.display = 'none';
-        }
-
-        function irParaRegistroPonto() {
-            fecharLembrete();
-            mudarAba('tabNovo', document.querySelectorAll('.nav-item')[1]);
-        }
-
-        function alternarTema() {
-            const body = document.body;
-            const btnIcon = document.querySelector('#btnTheme i');
-            const lblTheme = document.getElementById('lblTheme');
-
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-
-            localStorage.setItem('tema_preferido', isDark ? 'dark' : 'light');
-
-            if (isDark) {
-                btnIcon.className = "bi bi-sun-fill";
-                lblTheme.innerText = "Claro";
-            } else {
-                btnIcon.className = "bi bi-moon-fill";
-                lblTheme.innerText = "Escuro";
-            }
-
-            if (registrosGlobais.length > 0) renderizarDashboard();
-        }
-
-        function carregarTemaSalvo() {
-            const temaSalvo = localStorage.getItem('tema_preferido');
-            if (temaSalvo === 'dark') {
-                document.body.classList.add('dark-mode');
-                const btnIcon = document.querySelector('#btnTheme i');
-                const lblTheme = document.getElementById('lblTheme');
-                if (btnIcon) btnIcon.className = "bi bi-sun-fill";
-                if (lblTheme) lblTheme.innerText = "Claro";
-            }
-        }
-
-        function mudarAba(abaId, btn) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            const abaAlvo = document.getElementById(abaId);
-            if (abaAlvo) abaAlvo.classList.add('active');
-            if (btn) btn.classList.add('active');
-            
-            if (abaId === 'tabDashboard') renderizarDashboard();
-            if (abaId === 'tabCalendario') renderizarCalendario();
-            if (abaId === 'tabNovo') carregarMapaGPS();
-        }
-
-        function exportarCSV() {
-            if (registrosGlobais.length === 0) {
-                alert("Não há registros para exportar.");
-                return;
-            }
-            let csv = "Data,Tipo,Empresa,Observacao\n";
-            registrosGlobais.forEach(r => {
-                csv += `"${r.data}","${r.tipo}","${r.empresa || ''}","${r.observacao || ''}"\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `historico_pontos_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-        }
-
-        function fecharModal() {
-            const modal = document.getElementById('imgModal');
-            if (modal) modal.style.display = 'none';
-        }
-
-        // INICIALIZAÇÃO DA PÁGINA
-        document.addEventListener("DOMContentLoaded", () => {
-            carregarTemaSalvo();
-            carregarDados();
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
