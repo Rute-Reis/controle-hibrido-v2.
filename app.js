@@ -109,17 +109,18 @@ async function carregarDados() {
    RENDERIZAÇÃO DO DASHBOARD
    ========================================================================== */
 function renderizarDashboard() {
+    // Tenta pegar os elementos, mas não quebra se não existirem
     const ano = dataVisualizada.getFullYear();
     const mes = dataVisualizada.getMonth();
     const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
     const prefixoMesAno = `${ano}-${mesPad}`;
 
-    // Atualiza o título do mês
+    // Atualiza o título do mês (se existir)
     document.querySelectorAll('.displayMesAno').forEach(el => {
         el.innerText = `${NOMES_MESES[mes]} ${ano}`;
     });
 
-    // Filtra os registros do mês atual
+    // Filtra os registros
     const registrosDoMes = (registrosGlobais || []).filter(r => {
         const dtNorm = normalizarDataISO(r.data);
         return dtNorm && dtNorm.startsWith(prefixoMesAno);
@@ -138,7 +139,8 @@ function renderizarDashboard() {
     const pctProgressoAtual = metaPresencialExigida > 0 ? Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1) : 0;
 
     // --- ATUALIZAÇÃO DOS ELEMENTOS (COM VERIFICAÇÃO DE SEGURANÇA) ---
-    
+    // AQUI ESTÁ O SEGREDO: Só atualiza se o elemento existir no HTML.
+
     const elemTotalPresencial = document.getElementById('totalPresencial');
     if (elemTotalPresencial) {
         elemTotalPresencial.innerText = `${presenciais} de ${metaPresencialExigida} Dias Presenciais Feitos`;
@@ -154,12 +156,17 @@ function renderizarDashboard() {
         elemDetalhesMeta.innerText = `Mês tem ${diasUteis} dias úteis (descontados ${feriadosEmDiasUteis} feriado(s)) | Meta: ${metaPresencialExigida} dias (${pctMetaExigida}%)`;
     }
 
+    const elemDetalhesMétricas = document.getElementById('detalhesMétricas');
+    if (elemDetalhesMétricas) {
+        elemDetalhesMétricas.innerText = `Presenciais: ${presenciais} | Home Office: ${homeOffice} | Folgas: ${folgas} | FDS: ${fdsRegistrados}`;
+    }
+
     const progressBarFill = document.getElementById('progressBarFill');
     if (progressBarFill) {
         progressBarFill.style.width = `${pctProgressoAtual}%`;
     }
 
-    // Renderiza o Gráfico de Pizza
+    // Renderiza o Gráfico de Pizza (Verifica se o canvas existe)
     const canvasChart = document.getElementById('graficoJornada');
     if (canvasChart) {
         const ctx = canvasChart.getContext('2d');
