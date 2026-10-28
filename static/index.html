@@ -26,14 +26,18 @@
             --border-color: #dee2e6;
             --border-card: #e9ecef;
             --shadow-card: rgba(0, 0, 0, 0.05);
+
             --color-presencial: #2e7d32;
             --bg-presencial: #e8f5e9;
             --color-homeoffice: #0288d1;
             --bg-homeoffice: #e1f5fe;
             --color-folga: #ed6c02;
             --bg-folga: #fff3e0;
+            --color-afastamento: #d32f2f;
+            --bg-afastamento: #ffebee;
             --color-fds: #9c27b0;
             --bg-fds: #f3e5f5;
+
             --nav-active: #0d3b66;
         }
 
@@ -47,14 +51,18 @@
             --border-color: #2a2a2a;
             --border-card: #2a2a2a;
             --shadow-card: rgba(0, 0, 0, 0.4);
+
             --bg-presencial: #1b431e;
             --color-presencial: #81c784;
             --bg-homeoffice: #0d3c61;
             --color-homeoffice: #64b5f6;
             --bg-folga: #4a2800;
             --color-folga: #ffb74d;
+            --bg-afastamento: #4a1313;
+            --color-afastamento: #ef5350;
             --bg-fds: #3b1348;
             --color-fds: #ba68c8;
+
             --nav-active: #4dabf7;
         }
 
@@ -102,24 +110,14 @@
             transition: all 0.2s;
         }
 
-        #btnRefresh {
-            padding: 6px 10px;
-            font-size: 14px;
-        }
-
-        #btnRefresh:hover {
-            background: var(--bg-body);
-            transform: scale(1.05);
-        }
-
-        #btnRefresh.spinning i {
-            animation: spin 0.8s linear infinite;
-        }
+        #btnRefresh { padding: 6px 10px; font-size: 14px; }
+        #btnRefresh:hover { background: var(--bg-body); transform: scale(1.05); }
+        #btnRefresh.spinning i { animation: spin 0.8s linear infinite; }
 
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
-}
+        }
 
         .container { padding: 15px; }
 
@@ -282,12 +280,14 @@
         .cal-day.Presencial { background-color: var(--bg-presencial); color: var(--color-presencial); font-weight: bold; border: 1px solid var(--color-presencial); }
         .cal-day.HomeOffice { background-color: var(--bg-homeoffice); color: var(--color-homeoffice); font-weight: bold; border: 1px solid var(--color-homeoffice); }
         .cal-day.Folga { background-color: var(--bg-folga); color: var(--color-folga); font-weight: bold; border: 1px solid var(--color-folga); }
+        .cal-day.Afastamento { background-color: var(--bg-afastamento); color: var(--color-afastamento); font-weight: bold; border: 1px solid var(--color-afastamento); }
         .cal-day.FinalDeSemana { background-color: var(--bg-fds); color: var(--color-fds); font-weight: bold; border: 1px solid var(--color-fds); }
 
         .badge-tipo { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
         .badge-Presencial { background-color: var(--bg-presencial); color: var(--color-presencial); border: 1px solid var(--color-presencial); }
         .badge-HomeOffice { background-color: var(--bg-homeoffice); color: var(--color-homeoffice); border: 1px solid var(--color-homeoffice); }
         .badge-Folga { background-color: var(--bg-folga); color: var(--color-folga); border: 1px solid var(--color-folga); }
+        .badge-Afastamento { background-color: var(--bg-afastamento); color: var(--color-afastamento); border: 1px solid var(--color-afastamento); }
         .badge-FinalDeSemana { background-color: var(--bg-fds); color: var(--color-fds); border: 1px solid var(--color-fds); }
 
         .hist-item-card {
@@ -300,58 +300,39 @@
         }
         .hist-header-content { padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .hist-details { display: none; padding: 12px 14px 14px 14px; border-top: 1px dashed var(--border-color); background-color: var(--bg-input); }
-        .hist-details.active { display: block; animation: fadeIn 0.25s ease-in-out; }
 
         .card-actions { display: flex; gap: 8px; margin-top: 12px; }
         .btn-action-delete { background-color: #dc3545; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; width: auto; }
-        .btn-action-edit { background-color: #0d3b66; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: bold; cursor: pointer; width: auto; }
 
         .reminder-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-            padding: 20px;
+            justify-content: center; align-items: center;
+            z-index: 3000; padding: 20px;
         }
         .reminder-box {
             background: var(--bg-card);
             padding: 24px 20px;
             border-radius: 20px;
             text-align: center;
-            max-width: 360px;
-            width: 100%;
+            max-width: 360px; width: 100%;
             border: 1px solid var(--border-card);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            animation: slideUp 0.3s ease-out;
         }
         .reminder-icon { font-size: 42px; color: #0288d1; margin-bottom: 10px; }
 
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
+            justify-content: center; align-items: center;
+            z-index: 2000; padding: 20px;
         }
         .modal img { max-width: 95%; max-height: 85%; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
         .map-hist { height: 150px; width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid var(--border-color); }
         .thumb-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); cursor: pointer; }
@@ -368,7 +349,7 @@
 </head>
 <body>
 
-        <div class="header">
+    <div class="header">
         <div class="header-title">
             <i class="bi bi-geo-alt-fill"></i>
             <h1>Controle Híbrido</h1>
@@ -385,13 +366,12 @@
     </div>
 
     <div class="container">
-
+        
         <!-- 🏠 ABA 1: DASHBOARD -->
         <div id="tabDashboard" class="tab-content active">
-
             <div class="month-selector">
                 <button class="btn-month-nav" onclick="navegarMes(-1)">◀ Anterior</button>
-                <div class="month-title" id="displayMesAno">Setembro 2026</div>
+                <div class="month-title" id="displayMesAno">Outubro 2026</div>
                 <button class="btn-month-nav" onclick="navegarMes(1)">Próximo ▶</button>
             </div>
 
@@ -433,6 +413,7 @@
                         <option value="Presencial">🏢 Presencial</option>
                         <option value="Home Office">🏠 Home Office</option>
                         <option value="Folga / Feriado">🏖️ Folga / Feriado</option>
+                        <option value="Afastamento">💊 Afastamento / Atestado</option>
                         <option value="Final de Semana">📅 Final de Semana</option>
                     </select>
 
@@ -469,7 +450,7 @@
                     <span>📜 Histórico Completo</span>
                     <button class="btn-export" onclick="exportarCSV()">📥 Baixar CSV</button>
                 </h3>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">💡 Clique em qualquer registro para ver detalhes, apagar ou editar.</p>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">💡 Clique em qualquer registro para ver detalhes ou apagar.</p>
                 <div id="listaHistorico">Carregando histórico...</div>
             </div>
         </div>
@@ -518,11 +499,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- ================================================================
-         SCRIPT PRINCIPAL DA APLICAÇÃO (TUDO AQUI DENTRO)
-         ================================================================ -->
+    <!-- SCRIPT DA APLICAÇÃO -->
     <script>
-        // --- ESTADO GLOBAL ---
         const API_URL = "/api";
         let registrosGlobais = [];
         let mapaInstancia = null;
@@ -532,21 +510,17 @@
         let lngAtual = null;
         let dataVisualizada = new Date();
 
-        // --- FERIADOS OFICIAIS (NACIONAIS E SP) ---
         const FERIADOS_OFICIAIS = [
-            // 2026
             "2026-01-01", "2026-01-25", "2026-02-16", "2026-02-17",
             "2026-04-03", "2026-04-21", "2026-05-01", "2026-06-04",
             "2026-07-09", "2026-09-07", "2026-10-12", "2026-11-02",
             "2026-11-15", "2026-11-20", "2026-12-25",
-            // 2027
             "2027-01-01", "2027-02-08", "2027-02-09", "2027-03-26",
             "2027-04-21", "2027-05-01", "2027-05-27", "2027-07-09",
             "2027-09-07", "2027-10-12", "2027-11-02", "2027-11-15",
             "2027-11-20", "2027-12-25"
         ];
 
-        // --- REGRAS DE METAS (DIAS ÚTEIS -> DIAS PRESENCIAIS) ---
         const REGRAS_PLANILHA_VIVO = {
             1: 1, 2: 1, 3: 1, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 5, 10: 6,
             11: 6, 12: 7, 13: 7, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10,
@@ -558,14 +532,12 @@
             "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
         ];
 
-        // --- NAVEGAÇÃO DE MÊS ---
         function navegarMes(direcao) {
             dataVisualizada.setMonth(dataVisualizada.getMonth() + direcao);
             renderizarDashboard();
             renderizarCalendario();
         }
 
-        // --- CÁLCULO DE DIAS ÚTEIS ---
         function calcularDiasUteisMes(ano, mes) {
             const totalDiasNoMes = new Date(ano, mes + 1, 0).getDate();
             let diasUteis = 0;
@@ -588,7 +560,6 @@
             return { diasUteis, feriadosEmDiasUteis };
         }
 
-        // --- LEMBRETE DE PONTO ---
         function verificarLembretePontoHoje() {
             const agora = new Date();
             const diaSemana = agora.getDay();
@@ -623,7 +594,6 @@
             mudarAba('tabNovo', btnNovo);
         }
 
-        // --- TEMA ---
         function alternarTema() {
             const body = document.body;
             const btnIcon = document.querySelector('#btnTheme i');
@@ -653,7 +623,6 @@
             }
         }
 
-        // --- NAVEGAÇÃO DE ABAS ---
         function mudarAba(abaId, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -667,7 +636,6 @@
             if (abaId === 'tabNovo') carregarMapaGPS();
         }
 
-        // --- FORMATAÇÃO ---
         function formatarDataBR(dataISO) {
             if (!dataISO) return "";
             const partes = dataISO.split("-");
@@ -675,45 +643,38 @@
             return dataISO;
         }
 
-        // --- CARREGAR DADOS DA API ---
-        async function carregarDados(notificar = false) {
+        async function carregarDados() {
             try {
-            const res = await fetch(`${API_URL}/registros`);
-            registrosGlobais = await res.json();
-            renderizarDashboard();
-            renderizarHistorico();
-            verificarLembretePontoHoje();
-            if (notificar) alert("✅ Dados atualizados com sucesso!");
+                const res = await fetch(`${API_URL}/registros`);
+                registrosGlobais = await res.json();
+                renderizarDashboard();
+                renderizarHistorico();
+                verificarLembretePontoHoje();
             } catch (err) {
-            console.error("Erro ao carregar dados:", err);
-            const elem = document.getElementById("listaHistorico");
-            if (elem) elem.innerHTML = "<p style='color:#c62828;'>Erro ao carregar dados do Supabase.</p>";
+                console.error("Erro ao carregar dados:", err);
+                const elem = document.getElementById("listaHistorico");
+                if (elem) elem.innerHTML = "<p style='color:#c62828;'>Erro ao carregar dados do Supabase.</p>";
             }
         }
 
         async function atualizarDados() {
             const btn = document.getElementById('btnRefresh');
-        if (!btn) return;
-
-        // Adiciona a classe de rotação
+            if (!btn) return;
             btn.classList.add('spinning');
             btn.disabled = true;
 
             try {
-            await carregarDados();
-            console.log("🔄 Dados atualizados manualmente!");
+                await carregarDados();
             } catch (err) {
-            console.error("Erro ao atualizar:", err);
+                console.error("Erro ao atualizar:", err);
             } finally {
-        // Remove a rotação após um pequeno delay para dar feedback visual
-            setTimeout(() => {
-            btn.classList.remove('spinning');
-            btn.disabled = false;
-        }, 600);
+                setTimeout(() => {
+                    btn.classList.remove('spinning');
+                    btn.disabled = false;
+                }, 600);
             }
         }
 
-        // --- RENDERIZAÇÃO DO DASHBOARD ---
         function renderizarDashboard() {
             const ano = dataVisualizada.getFullYear();
             const mes = dataVisualizada.getMonth();
@@ -728,11 +689,14 @@
             const presenciais = registrosDoMes.filter(r => r.tipo === 'Presencial').length;
             const homeOffice = registrosDoMes.filter(r => r.tipo === 'Home Office').length;
             const folgas = registrosDoMes.filter(r => r.tipo === 'Folga / Feriado').length;
+            const afastamentos = registrosDoMes.filter(r => r.tipo === 'Afastamento').length;
             const fdsRegistrados = registrosDoMes.filter(r => r.tipo === 'Final de Semana').length;
 
-            const { diasUteis, feriadosEmDiasUteis } = calcularDiasUteisMes(ano, mes);
-            const metaPresencialExigida = REGRAS_PLANILHA_VIVO[diasUteis] || 12;
-            const pctMetaExigida = diasUteis > 0 ? ((metaPresencialExigida / diasUteis) * 100).toFixed(2) : 0;
+            const { diasUteis: diasUteisBrutos, feriadosEmDiasUteis } = calcularDiasUteisMes(ano, mes);
+            const diasUteisEfetivos = Math.max(0, diasUteisBrutos - afastamentos);
+            
+            const metaPresencialExigida = REGRAS_PLANILHA_VIVO[diasUteisEfetivos] || Math.min(12, diasUteisEfetivos);
+            const pctMetaExigida = diasUteisEfetivos > 0 ? ((metaPresencialExigida / diasUteisEfetivos) * 100).toFixed(2) : 0;
             const pctProgressoAtual = metaPresencialExigida > 0 ? Math.min(((presenciais / metaPresencialExigida) * 100), 100).toFixed(1) : 0;
 
             const elemTotal = document.getElementById('totalPresencial');
@@ -742,7 +706,7 @@
             if (elemProgresso) elemProgresso.innerText = `🎯 Progresso Atual: ${pctProgressoAtual}% da meta concluída`;
 
             const elemPct = document.getElementById('pctPresencial');
-            if (elemPct) elemPct.innerText = `Mês tem ${diasUteis} dias úteis (descontados ${feriadosEmDiasUteis} feriado(s)) | Meta: ${metaPresencialExigida} dias (${pctMetaExigida}%)`;
+            if (elemPct) elemPct.innerText = `Mês tem ${diasUteisEfetivos} dias úteis (${feriadosEmDiasUteis} feriado(s), ${afastamentos} afastamento(s)) | Meta: ${metaPresencialExigida} dias (${pctMetaExigida}%)`;
 
             const elemBarra = document.getElementById('progressBarFill');
             if (elemBarra) elemBarra.style.width = `${pctProgressoAtual}%`;
@@ -752,8 +716,9 @@
                 elemMetricas.innerHTML = `
                     🏢 <strong>Presenciais Realizados:</strong> ${presenciais} / ${metaPresencialExigida} dias<br>
                     🏠 <strong>Home Office Realizados:</strong> ${homeOffice} dia(s)<br>
+                    💊 <strong>Afastamentos / Atestados:</strong> ${afastamentos} dia(s)<br>
                     🏖️ <strong>Feriados em Dias Úteis:</strong> ${feriadosEmDiasUteis} dia(s)<br>
-                    📊 <strong>Total de Dias Úteis de Trabalho:</strong> ${diasUteis} dias
+                    📊 <strong>Total de Dias Úteis Líquidos:</strong> ${diasUteisEfetivos} dias
                 `;
             }
 
@@ -768,10 +733,10 @@
                 chartInstancia = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Home Office', 'Folga (Feriado)', 'Final de Semana', 'Presencial'],
+                        labels: ['Home Office', 'Folga / Feriado', 'Afastamento', 'Final de Semana', 'Presencial'],
                         datasets: [{
-                            data: [homeOffice, folgas, fdsRegistrados, presenciais],
-                            backgroundColor: ['#0288d1', '#ed6c02', '#9c27b0', '#2e7d32'],
+                            data: [homeOffice, folgas, afastamentos, fdsRegistrados, presenciais],
+                            backgroundColor: ['#0288d1', '#ed6c02', '#d32f2f', '#9c27b0', '#2e7d32'],
                             borderWidth: 2,
                             borderColor: isDark ? '#1e1e1e' : '#ffffff',
                             hoverOffset: 15
@@ -781,261 +746,233 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'right', labels: { color: textColor, font: { size: 12, weight: 'bold' } } }
+                            legend: { position: 'right', labels: { color: textColor, font: { size: 11, weight: 'bold' } } }
                         }
                     }
                 });
             }
         }
 
-        // --- RENDERIZAÇÃO DO CALENDÁRIO ---
         function renderizarCalendario() {
             const grid = document.getElementById('gridCalendario');
             if (!grid) return;
-
-            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-            let html = diasSemana.map(d => `<div class="cal-head">${d}</div>`).join('');
+            grid.innerHTML = '';
 
             const ano = dataVisualizada.getFullYear();
             const mes = dataVisualizada.getMonth();
 
-            const primeiroDiaDaSemana = new Date(ano, mes, 1).getDay();
-            const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            diasSemana.forEach(d => {
+                const head = document.createElement('div');
+                head.className = 'cal-head';
+                head.innerText = d;
+                grid.appendChild(head);
+            });
 
-            for (let i = 0; i < primeiroDiaDaSemana; i++) html += `<div class="cal-empty"></div>`;
+            const primeiroDiaIndex = new Date(ano, mes, 1).getDay();
+            const totalDiasMes = new Date(ano, mes + 1, 0).getDate();
 
-            for (let d = 1; d <= diasNoMes; d++) {
-                const diaPad = d < 10 ? '0' + d : d;
-                const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
-                const dataStr = `${ano}-${mesPad}-${diaPad}`;
-
-                const reg = registrosGlobais.find(r => r.data === dataStr);
-                const diaSemanaObj = new Date(ano, mes, d).getDay();
-                const ehFinalDeSemana = (diaSemanaObj === 0 || diaSemanaObj === 6);
-                const ehFeriado = FERIADOS_OFICIAIS.includes(dataStr);
-
-                let tipoClasse = '';
-                if (reg) tipoClasse = reg.tipo.replace(/\s+/g, '');
-                else if (ehFeriado) tipoClasse = 'Folga';
-                else if (ehFinalDeSemana) tipoClasse = 'FinalDeSemana';
-
-                html += `<div class="cal-day ${tipoClasse}" onclick="agendarData('${dataStr}')" title="Clique para registrar">${d}</div>`;
+            for (let i = 0; i < primeiroDiaIndex; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'cal-empty';
+                grid.appendChild(empty);
             }
-            grid.innerHTML = html;
+
+            for (let dia = 1; dia <= totalDiasMes; dia++) {
+                const diaPad = dia < 10 ? '0' + dia : dia;
+                const mesPad = (mes + 1) < 10 ? '0' + (mes + 1) : (mes + 1);
+                const dataISO = `${ano}-${mesPad}-${diaPad}`;
+
+                const elDia = document.createElement('div');
+                elDia.className = 'cal-day';
+                elDia.innerText = dia;
+
+                const reg = registrosGlobais.find(r => r.data === dataISO);
+                if (reg) {
+                    if (reg.tipo === 'Presencial') elDia.classList.add('Presencial');
+                    else if (reg.tipo === 'Home Office') elDia.classList.add('HomeOffice');
+                    else if (reg.tipo === 'Folga / Feriado') elDia.classList.add('Folga');
+                    else if (reg.tipo === 'Afastamento') elDia.classList.add('Afastamento');
+                    else if (reg.tipo === 'Final de Semana') elDia.classList.add('FinalDeSemana');
+                }
+
+                elDia.onclick = () => {
+                    document.getElementById('dataManual').value = dataISO;
+                    mudarAba('tabNovo', document.querySelectorAll('.nav-item')[1]);
+                };
+
+                grid.appendChild(elDia);
+            }
         }
 
-        // --- RENDERIZAÇÃO DO HISTÓRICO ---
         function renderizarHistorico() {
-            const container = document.getElementById('listaHistorico');
-            if (!container) return;
+            const lista = document.getElementById('listaHistorico');
+            if (!lista) return;
 
-            if (!registrosGlobais || registrosGlobais.length === 0) {
-                container.innerHTML = "<p style='color:var(--text-muted); font-size:13px; text-align:center;'>Nenhum ponto registrado ainda.</p>";
+            if (registrosGlobais.length === 0) {
+                lista.innerHTML = "<p style='text-align:center; color:var(--text-muted); font-size:13px;'>Nenhum ponto registrado ainda.</p>";
                 return;
             }
 
-            container.innerHTML = registrosGlobais.map(r => {
-                const tipoClasse = (r.tipo || 'Presencial').replace(/\s+/g, '');
-                return `
-                    <div class="hist-item-card">
-                        <div class="hist-header-content" onclick="alternarDetalhesCard(${r.id}, ${r.latitude || -23.55052}, ${r.longitude || -46.633308})">
-                            <div>
-                                <span class="badge-tipo badge-${tipoClasse}">${r.tipo}</span><br>
-                                <strong>#${r.id} - ${r.empresa || 'Vivo'}</strong><br>
-                                <small style="color:var(--text-muted);">📅 ${formatarDataBR(r.data)} às ⏰ ${r.hora}</small>
-                            </div>
-                            ${r.foto_url ? `<img src="${r.foto_url}" class="thumb-img" onclick="event.stopPropagation(); expandirImagem('${r.foto_url}')" title="Clique para ampliar">` : '<i class="bi bi-chevron-down" style="color:var(--text-muted); font-size:18px;"></i>'}
+            lista.innerHTML = '';
+            const ordenados = [...registrosGlobais].sort((a, b) => new Date(b.data) - new Date(a.data));
+
+            ordenados.forEach((r) => {
+                const dataBR = formatarDataBR(r.data);
+                let classeBadge = "badge-Presencial";
+                if (r.tipo === 'Home Office') classeBadge = "badge-HomeOffice";
+                else if (r.tipo === 'Folga / Feriado') classeBadge = "badge-Folga";
+                else if (r.tipo === 'Afastamento') classeBadge = "badge-Afastamento";
+                else if (r.tipo === 'Final de Semana') classeBadge = "badge-FinalDeSemana";
+
+                const card = document.createElement('div');
+                card.className = 'hist-item-card';
+                const mapId = `map-hist-${r.id}`;
+
+                card.innerHTML = `
+                    <div class="hist-header-content" onclick="toggleDetalhesHistorico('${mapId}', ${r.latitude}, ${r.longitude})">
+                        <div>
+                            <span class="badge-tipo ${classeBadge}">${r.tipo || 'Presencial'}</span>
+                            <div style="font-weight: bold; font-size: 14px;">${dataBR} - ${r.empresa || 'Vivo'}</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">${r.observacao || 'Sem observações'}</div>
                         </div>
-
-                        <div id="card-detail-${r.id}" class="hist-details">
-                            <p style="font-size:12px; color:var(--text-main); margin-top:4px;">
-                                <strong>📝 Observação:</strong> ${r.observacao || 'Nenhuma observação informada.'}
-                            </p>
-                            <div id="map-hist-${r.id}" class="map-hist"></div>
-
-                            <div class="card-actions">
-                                <button class="btn-action-edit" onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.observacao || ''}')">✏️ Editar Tipo</button>
-                                <button class="btn-action-delete" onclick="apagarRegistro(${r.id})">🗑️ Apagar Ponto</button>
-                            </div>
+                        <i class="bi bi-chevron-down" style="color: var(--text-muted);"></i>
+                    </div>
+                    <div id="details-${mapId}" class="hist-details">
+                        ${r.foto_url ? `<div style="margin-bottom: 10px;"><img src="${r.foto_url}" class="thumb-img" onclick="ampliarFoto('${r.foto_url}')" alt="Comprovante"></div>` : ''}
+                        ${(r.latitude && r.longitude) ? `<div id="${mapId}" class="map-hist"></div>` : '<p style="font-size: 11px; color: var(--text-muted);">Sem GPS gravado</p>'}
+                        <div class="card-actions">
+                            <button class="btn-action-delete" onclick="apagarRegistro(${r.id})">🗑 Apagar</button>
                         </div>
                     </div>
                 `;
-            }).join('');
+                lista.appendChild(card);
+            });
         }
 
-        function alternarDetalhesCard(id, lat, lng) {
-            const detailDiv = document.getElementById(`card-detail-${id}`);
-            if (!detailDiv) return;
+        function toggleDetalhesHistorico(mapId, lat, lng) {
+            const detailsDiv = document.getElementById(`details-${mapId}`);
+            if (!detailsDiv) return;
 
-            const isVisible = detailDiv.classList.contains('active');
-            document.querySelectorAll('.hist-details').forEach(el => el.classList.remove('active'));
+            const isOpen = detailsDiv.style.display === 'block';
+            detailsDiv.style.display = isOpen ? 'none' : 'block';
 
-            if (!isVisible) {
-                detailDiv.classList.add('active');
+            if (!isOpen && lat && lng) {
                 setTimeout(() => {
-                    const mapContainer = document.getElementById(`map-hist-${id}`);
-                    if (mapContainer && !mapasHistInstancias[id]) {
-                        const map = L.map(`map-hist-${id}`).setView([lat, lng], 15);
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-                        L.marker([lat, lng]).addTo(map).bindPopup(`Ponto #${id}`).openPopup();
-                        mapasHistInstancias[id] = map;
-                    }
-                }, 100);
-            }
-        }
-
-        // --- APAGAR E EDITAR ---
-        async function apagarRegistro(id) {
-            if (confirm(`Tem certeza que deseja apagar o registro #${id}?`)) {
-                try {
-                    const res = await fetch(`${API_URL}/registros/${id}`, { method: 'DELETE' });
-                    const data = await res.json();
-                    if (data.sucesso) {
-                        alert("✅ Registro removido com sucesso!");
-                        await carregarDados();
+                    if (!mapasHistInstancias[mapId]) {
+                        const map = L.map(mapId).setView([lat, lng], 15);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap'
+                        }).addTo(map);
+                        L.marker([lat, lng]).addTo(map);
+                        mapasHistInstancias[mapId] = map;
                     } else {
-                        alert("❌ Erro ao apagar o registro.");
+                        mapasHistInstancias[mapId].invalidateSize();
                     }
-                } catch (err) {
-                    alert("❌ Erro ao comunicar com a API.");
-                }
+                }, 150);
             }
         }
 
-        async function editarRegistro(id, tipoAtual, obsAtual) {
-            const novoTipo = prompt("Selecione o novo tipo de jornada (Presencial, Home Office, Folga / Feriado, Final de Semana):", tipoAtual);
-            if (!novoTipo) return;
+        function carregarMapaGPS() {
+            setTimeout(() => {
+                const container = document.getElementById('mapaLocal');
+                if (!container) return;
 
-            const novaObs = prompt("Digite a nova observação:", obsAtual);
+                if (!mapaInstancia) {
+                    mapaInstancia = L.map('mapaLocal').setView([-23.55052, -46.633308], 14);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap'
+                    }).addTo(mapaInstancia);
+                }
 
-            const formData = new FormData();
-            formData.append('tipo', novoTipo);
-            formData.append('observacao', novaObs || "");
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => {
+                            latAtual = pos.coords.latitude;
+                            lngAtual = pos.coords.longitude;
+                            mapaInstancia.setView([latAtual, lngAtual], 16);
+                            L.marker([latAtual, lngAtual]).addTo(mapaInstancia).bindPopup("Sua localização atual").openPopup();
+                        },
+                        err => console.warn("GPS não autorizado ou indisponível", err),
+                        { enableHighAccuracy: true, timeout: 8000 }
+                    );
+                }
+            }, 250);
+        }
+
+        document.getElementById('formPonto')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSalvar');
+            const status = document.getElementById('statusMsg');
+
+            btn.disabled = true;
+            status.innerText = "Registrando ponto...";
+            status.className = "status-msg";
+
+            const formData = new FormData(this);
+            if (latAtual) formData.append('latitude', latAtual);
+            if (lngAtual) formData.append('longitude', lngAtual);
 
             try {
-                const res = await fetch(`${API_URL}/registros/${id}`, { method: 'PUT', body: formData });
-                const data = await res.json();
-                if (data.sucesso) {
-                    alert("✅ Registro atualizado com sucesso!");
+                const res = await fetch(`${API_URL}/registrar`, { method: 'POST', body: formData });
+                if (res.ok) {
+                    status.innerText = "✅ Ponto registado com sucesso!";
+                    status.className = "status-msg status-sucesso";
+                    this.reset();
                     await carregarDados();
+                    setTimeout(() => {
+                        status.innerText = "";
+                        mudarAba('tabDashboard', document.querySelectorAll('.nav-item')[0]);
+                    }, 1200);
                 } else {
-                    alert("❌ Erro ao atualizar registro.");
+                    throw new Error("Erro no servidor");
                 }
             } catch (err) {
-                alert("❌ Erro ao comunicar com a API.");
+                console.error(err);
+                status.innerText = "❌ Erro ao registrar ponto.";
+                status.className = "status-msg status-erro";
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        async function apagarRegistro(id) {
+            if (!confirm("Deseja mesmo apagar este registro?")) return;
+            try {
+                const res = await fetch(`${API_URL}/registros/${id}`, { method: 'DELETE' });
+                if (res.ok) await carregarDados();
+            } catch (err) {
+                console.error("Erro ao apagar:", err);
             }
         }
 
-        // --- MODAIS ---
-        function expandirImagem(url) {
-            document.getElementById('imgExpanded').src = url;
-            document.getElementById('imgModal').style.display = 'flex';
+        function exportarCSV() {
+            if (registrosGlobais.length === 0) return alert("Sem registros para exportar.");
+            let csv = "data:text/csv;charset=utf-8,Data,Tipo,Empresa,Observacao,Latitude,Longitude\n";
+            registrosGlobais.forEach(r => {
+                csv += `${r.data},"${r.tipo || ''}","${r.empresa || ''}","${r.observacao || ''}",${r.latitude || ''},${r.longitude || ''}\n`;
+            });
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = `controle_hibrido_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        function ampliarFoto(url) {
+            const modal = document.getElementById('imgModal');
+            const img = document.getElementById('imgExpanded');
+            if (modal && img) {
+                img.src = url;
+                modal.style.display = 'flex';
+            }
         }
 
         function fecharModal() {
             document.getElementById('imgModal').style.display = 'none';
         }
 
-        // --- EXPORTAR CSV ---
-        function exportarCSV() {
-            if (!registrosGlobais || registrosGlobais.length === 0) {
-                alert("Não existem registros para exportar!");
-                return;
-            }
-
-            let csvContent = "ID;Data;Hora;Tipo;Empresa;Observacao;URL_Foto\n";
-            registrosGlobais.forEach(r => {
-                const linha = `${r.id};${formatarDataBR(r.data)};${r.hora};${r.tipo};${r.empresa || 'Vivo'};"${r.observacao || ''}";"${r.foto_url || ''}"`;
-                csvContent += linha + "\n";
-            });
-
-            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `historico_ponto_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // --- AGENDAR DATA PELO CALENDÁRIO ---
-        function agendarData(dataStr) {
-            document.getElementById('dataManual').value = dataStr;
-            const btnNovo = document.querySelectorAll('.nav-item')[1];
-            mudarAba('tabNovo', btnNovo);
-        }
-
-        // --- MAPA GPS ---
-        function carregarMapaGPS() {
-            if (mapaInstancia) return;
-
-            const latPadrao = -23.55052;
-            const lngPadrao = -46.633308;
-
-            mapaInstancia = L.map('mapaLocal').setView([latPadrao, lngPadrao], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaInstancia);
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    latAtual = pos.coords.latitude;
-                    lngAtual = pos.coords.longitude;
-                    mapaInstancia.setView([latAtual, lngAtual], 15);
-                    L.marker([latAtual, lngAtual]).addTo(mapaInstancia).bindPopup("Você está aqui!").openPopup();
-                });
-            }
-        }
-
-        // --- SUBMIT DO FORMULÁRIO ---
-        function inicializarFormulario() {
-            const form = document.getElementById('formPonto');
-            if (!form) return;
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('btnSalvar');
-                const statusDiv = document.getElementById('statusMsg');
-                const formData = new FormData(e.target);
-
-                if (latAtual && lngAtual) {
-                    formData.append('latitude', latAtual);
-                    formData.append('longitude', lngAtual);
-                }
-
-                btn.disabled = true;
-                btn.innerText = "Salvando no Supabase...";
-
-                try {
-                    const res = await fetch(`${API_URL}/registrar`, { method: 'POST', body: formData });
-                    const data = await res.json();
-
-                    if (data.sucesso) {
-                        statusDiv.className = "status-msg status-sucesso";
-                        statusDiv.innerText = "✅ " + data.mensagem;
-                        e.target.reset();
-                        document.getElementById('empresa').value = 'Vivo';
-                        await carregarDados();
-                        const btnHist = document.querySelectorAll('.nav-item')[3];
-                        mudarAba('tabHistorico', btnHist);
-                    } else {
-                        statusDiv.className = "status-msg status-erro";
-                        statusDiv.innerText = "❌ Erro ao registrar ponto.";
-                    }
-                } catch (err) {
-                    statusDiv.className = "status-msg status-erro";
-                    statusDiv.innerText = "❌ Erro ao comunicar com a API.";
-                } finally {
-                    btn.disabled = false;
-                    btn.innerText = "📍 Salvar Ponto Agora";
-                }
-            });
-        }
-
-        // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("🚀 App iniciado!");
             carregarTemaSalvo();
-            inicializarFormulario();
             carregarDados();
         });
     </script>
